@@ -24,16 +24,7 @@ class NaiveDataGenerator():
             (None, cfg.model.output_width, 10)
         )
         self.output_types = (tf.float32, tf.float32)
-        self.stores = {
-            'train': pd.HDFStore(f'{SIMULATED_DATA_ROOT}/train.h5'),
-            'dev': pd.HDFStore(f'{SIMULATED_DATA_ROOT}/dev.h5'),
-            'test': pd.HDFStore(f'{SIMULATED_DATA_ROOT}/test.h5')
-        }
-        self.sessions = {
-            'train': self.stores['train'].select_column('df', 'id').unique().tolist(),
-            'dev': self.stores['dev'].select_column('df', 'id').unique().tolist(),
-            'test': self.stores['test'].select_column('df', 'id').unique().tolist()
-        }
+        self.stores = {f: f'{SIMULATED_DATA_ROOT}/sequences_{f}.h5' for f in ['train', 'dev', 'test']}
 
     def generate_train(self):
         return self.generate('train')
@@ -60,16 +51,15 @@ class NaiveDataGenerator():
             self.generate_test, output_types=self.output_types, output_shapes=self.output_shapes)
 
     def generate(self, type):
-        store = self.stores[type]
-        sessions = self.sessions[type]
-        random.shuffle(sessions)
-        for session in sessions:
-            df = store.select('df', 'id=%r' % session)
-            assert df.index.values[0][0] == df.index.values[-1][0]
-            data = df[self.data_cols].to_numpy(dtype=np.float32)
-            ds = self.make_window_dataset(data)
-            for x, y in ds:
-                yield x, y
+        with h5py.File(self.stores[type], 'r') as f:
+            dset = f['df']
+            indices = list(range(len(dset)))
+            random.shuffle(indices)
+            for idx in indices:
+                data = dset[idx, :, :-1]
+                ds = self.make_window_dataset(data)
+                for x, y in ds:
+                    yield x, y
 
     def make_window_dataset(self, data):
         total_width = self.cfg.model.input_width + self.cfg.model.output_width
@@ -97,18 +87,16 @@ class NaiveDataGenerator():
 class CPCDataGenerator():
     def __init__(self, cfg):
         self.cfg = cfg
-        sequence_length = 90 + cfg.model.chunk_size
-        self.input_width = sequence_length // cfg.model.chunk_stride
+        self.total_sequence_length = self.cfg.model.input_width * self.cfg.model.chunk_stride + self.cfg.model.chunk_size
         self.output_shapes = {
-            'o_i': (None, self.input_width - 1, cfg.model.chunk_size, 10),
+            'o_i': (None, self.cfg.model.input_width, cfg.model.chunk_size, 10),
             'o_j': (None, cfg.model.chunk_size, 10)
         }
         self.output_types = {
             'o_i': tf.float32,
             'o_j': tf.float32
         }
-        fname = f'sequences_sequence-length={sequence_length}_sequence-stride={cfg.model.sequence_stride}'
-        self.stores = {f: h5py.File(f'{SIMULATED_DATA_ROOT}/{fname}_{f}.h5', 'r') for f in ['train', 'dev', 'test']}
+        self.stores = {f: f'{SIMULATED_DATA_ROOT}/sequences_{f}.h5' for f in ['train', 'dev', 'test']}
 
     def generate_train(self):
         return self.generate('train')
@@ -132,16 +120,22 @@ class CPCDataGenerator():
         return tf.data.Dataset.from_generator(self.generate_test, output_types=self.output_types, output_shapes=self.output_shapes)
 
     def generate(self, type):
-        batch_size = self.cfg.model.batch_size
-        sequences = self.stores[type]['df']
-        indices = list(range(len(sequences)))
-        random.shuffle(indices)
-        indices = np.array(indices)
-        for batch_idx in range(0, len(sequences) - batch_size + 1, batch_size):
-            batch_indices = indices[batch_idx:batch_idx+batch_size]
-            batch = sequences[sorted(batch_indices)]
-            o_i, o_j = self.split_chunks(batch)
-            yield {'o_i': o_i, 'o_j': o_j}
+        with h5py.File(self.stores[type], 'r') as f:
+            dset = f['df']
+            sequences_per_session = (SESSION_SIZE - self.total_sequence_length) // self.cfg.model.chunk_stride + 1
+            indices = list(range(len(dset) * sequences_per_session))
+            random.shuffle(indices)
+            batch = []
+            for idx in indices:
+                session_idx = idx // sequences_per_session
+                sequence_idx = (idx % sequences_per_session) * self.cfg.model.chunk_stride
+                data = dset[session_idx, sequence_idx:(sequence_idx+self.total_sequence_length), :-1]
+                batch.append(data)
+                if len(batch) == self.cfg.model.batch_size:
+                    batch = np.array(batch)
+                    o_i, o_j = self.split_chunks(batch)
+                    yield {'o_i': o_i, 'o_j': o_j}
+                    batch = []
 
     def split_chunks(self, batch):
         chunks = []
@@ -152,7 +146,7 @@ class CPCDataGenerator():
         batch = tf.convert_to_tensor(batch, dtype=tf.float32)
         o_i = batch[:, :-1]
         o_j = batch[:, -1]
-        o_i.set_shape([None, self.input_width - 1, self.cfg.model.chunk_size, 10])
+        o_i.set_shape([None, self.cfg.model.input_width, self.cfg.model.chunk_size, 10])
         o_j.set_shape([None, self.cfg.model.chunk_size, 10])
         return o_i, o_j
 
@@ -537,10 +531,10 @@ def visualize(gen):
 if __name__ == '__main__':
     cfg = OmegaConf.load('conf/config.yaml')
     cfg.model = OmegaConf.load('conf/model/cpc.yaml')
-    cfg.model.batch_size = 10
+    # cfg.model.batch_size = 10
     print(cfg)
-    gen = CPCCrowdsourcingDataGenerator(cfg)
-    for x, y in gen.dev:
-        print(x.shape, y.shape)
+    gen = CPCDataGenerator(cfg)
+    for x in gen.dev:
+        print(x['o_i'].shape, x['o_j'].shape)
         break
     # visualize(gen)
