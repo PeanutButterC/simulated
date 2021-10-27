@@ -10,7 +10,9 @@ import h5py
 def gather(sequence_length, sequence_stride):
     fname = f'sequences_sequence-length={sequence_length}_sequence-stride={sequence_stride}'
     output_stores = {f: f'{SIMULATED_DATA_ROOT}/{fname}_{f}.h5' for f in ['train', 'dev', 'test']}
+    print('loading stores')
     stores = {f: pd.HDFStore(f'{SIMULATED_DATA_ROOT}/{f}.h5') for f in ['train', 'dev', 'test']}
+    print('getting sessions')
     sessions = {
         'train': stores['train'].select_column('df', 'id').unique().tolist(),
         'dev': stores['dev'].select_column('df', 'id').unique().tolist(),
@@ -18,6 +20,7 @@ def gather(sequence_length, sequence_stride):
     }
 
     for type in ['train', 'dev', 'test']:
+        print(type)
         with h5py.File(output_stores[type], 'w') as f:
             n_sequences = len(sessions[type]) * ((SESSION_SIZE - sequence_length) // sequence_stride + 1)
             output_dset = f.create_dataset('df', (n_sequences, sequence_length, len(DATA_COLS)), dtype=np.float32)
