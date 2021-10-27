@@ -11,25 +11,19 @@ def gather(sequence_length, sequence_stride):
     fname = f'sequences_sequence-length={sequence_length}_sequence-stride={sequence_stride}'
     output_stores = {f: f'{SIMULATED_DATA_ROOT}/{fname}_{f}.h5' for f in ['train', 'dev', 'test']}
     print('loading stores')
-    stores = {f: pd.HDFStore(f'{SIMULATED_DATA_ROOT}/{f}.h5') for f in ['train', 'dev', 'test']}
-    print('getting sessions')
-    sessions = {
-        'train': stores['train'].select_column('df', 'id').unique().tolist(),
-        'dev': stores['dev'].select_column('df', 'id').unique().tolist(),
-        'test': stores['test'].select_column('df', 'id').unique().tolist(),
-    }
+    stores = {type: pd.HDFStore(f'{SIMULATED_DATA_ROOT}/{type}.h5', 'r') for type in ['train', 'dev', 'test']}
 
     for type in ['train', 'dev', 'test']:
-        print(type)
         with h5py.File(output_stores[type], 'w') as f:
-            n_sequences = len(sessions[type]) * ((SESSION_SIZE - sequence_length) // sequence_stride + 1)
-            output_dset = f.create_dataset('df', (n_sequences, sequence_length, len(DATA_COLS)), dtype=np.float32)
-            output_hand_states = f.create_dataset('hand_states', (n_sequences, sequence_length), dtype=np.int64)
+            nsessions = stores[type].get_storer('df').nrows // SESSION_SIZE
+            chunksize = (SESSION_SIZE - sequence_length) // sequence_stride + 1
+            n_sequences = nsessions * chunksize
+            output_dset = f.create_dataset('df', (n_sequences, sequence_length, len(DATA_COLS)), dtype=np.float32, chunks=(chunksize, sequence_length, len(DATA_COLS)))
+            output_hand_states = f.create_dataset('hand_states', (n_sequences, sequence_length), dtype=np.int64, chunks=(chunksize, sequence_length))
             idx = 0
             indices = []
-            for session in tqdm(sessions[type]):
-                df = stores[type].select('df', 'id=%r' % session)
-                assert len(df) == SESSION_SIZE
+            for df in tqdm(stores[type].select('df', chunksize=SESSION_SIZE), total=nsessions):
+                assert df.index.values[0][0] == df.index.values[-1][0]
                 data = df[DATA_COLS].to_numpy()
                 hand_states = df['hand_state'].to_numpy(dtype=np.int64)
                 for i in range(0, SESSION_SIZE - sequence_length + 1, sequence_stride):
