@@ -1,0 +1,11 @@
+data/
+mini/
+data_raw/
+mini_raw/
+mini_raw_images/
+images/
+multirun/
+outputs/
+crowdsourcing/images/
+crowdsourcing/videos/
+minilocal/

@@ -1,0 +1,3 @@
+defaults:
+  - model: naive
+patience: 5

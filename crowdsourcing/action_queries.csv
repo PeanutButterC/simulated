@@ -1,0 +1,25 @@
+action,query
+hit,does the object get hit?
+slap,does the object get slapped?
+carry,does the object get carried?
+turn,is the object turning?
+roll,does the object roll?
+spin,does the object spin?
+bounce,does the object bounce?
+fall,does the object fall?
+drop,does the object get dropped?
+fall off,does the object fall off something?
+fall over,does the object fall over?
+bump,does the object get bumped?
+slide,does the object slide?
+pick up,does the object get picked up?
+put down,does the object get put down?
+push,does the object get pushed?
+flip,is the object flipping?
+start,does the object start moving?
+stop,does the object stop moving?
+toss,does the object get tossed?
+throw,does the object get thrown?
+topple,does the object topple?
+tip,does the object tip?
+tumble,does the object tumble?

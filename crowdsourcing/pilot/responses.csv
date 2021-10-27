@@ -1,0 +1,101 @@
+index,meta_idx,batch_idx,action,type,query,url,response_1,response_2,response_3,mode,agreement
+0,90942,21,toss,train,Does the object get tossed?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/3720.mp4,no,no,yes,no,0.6666666666666666
+1,90639,21,toss,train,Does the object get tossed?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/624.mp4,no,no,yes,no,0.6666666666666666
+2,90683,21,toss,train,Does the object get tossed?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1136.mp4,yes,yes,no,yes,0.6666666666666666
+3,90584,21,toss,train,Does the object get tossed?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/41.mp4,no,no,yes,no,0.6666666666666666
+4,90833,21,toss,train,Does the object get tossed?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2679.mp4,no,no,yes,no,0.6666666666666666
+5,90727,21,toss,train,Does the object get tossed?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1682.mp4,no,no,yes,no,0.6666666666666666
+6,90841,21,toss,train,Does the object get tossed?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2798.mp4,yes,yes,no,yes,0.6666666666666666
+7,90620,21,toss,train,Does the object get tossed?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/435.mp4,no,no,no,no,1.0
+8,91000,21,toss,train,Does the object get tossed?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4308.mp4,no,no,yes,no,0.6666666666666666
+9,90784,21,toss,train,Does the object get tossed?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2183.mp4,no,no,yes,no,0.6666666666666666
+10,106063,22,tumble,train,Does the object tumble?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4604.mp4,yes,yes,yes,yes,1.0
+11,104568,22,tumble,train,Does the object tumble?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2736.mp4,no,no,no,no,1.0
+12,105101,22,tumble,train,Does the object tumble?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/3389.mp4,no,no,no,no,1.0
+13,102699,22,tumble,train,Does the object tumble?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/406.mp4,yes,yes,no,yes,0.6666666666666666
+14,104037,22,tumble,train,Does the object tumble?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2085.mp4,no,no,no,no,1.0
+15,103526,22,tumble,train,Does the object tumble?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1439.mp4,yes,yes,no,yes,0.6666666666666666
+16,102628,22,tumble,train,Does the object tumble?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/315.mp4,no,no,unsure,no,0.6666666666666666
+17,104132,22,tumble,train,Does the object tumble?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2195.mp4,no,no,no,no,1.0
+18,102594,22,tumble,train,Does the object tumble?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/269.mp4,no,no,yes,no,0.6666666666666666
+19,105917,22,tumble,train,Does the object tumble?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4419.mp4,yes,no,no,no,0.6666666666666666
+20,13764,23,turn,train,Is the object turning?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/655.mp4,no,no,yes,no,0.6666666666666666
+21,15742,23,turn,train,Is the object turning?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2633.mp4,yes,no,unsure,no,0.3333333333333333
+22,15442,23,turn,train,Is the object turning?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2333.mp4,no,no,yes,no,0.6666666666666666
+23,17323,23,turn,train,Is the object turning?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4214.mp4,no,no,no,no,1.0
+24,14812,23,turn,train,Is the object turning?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1703.mp4,no,no,yes,no,0.6666666666666666
+25,17186,23,turn,train,Is the object turning?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4077.mp4,no,no,no,no,1.0
+26,15738,23,turn,train,Is the object turning?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2629.mp4,no,no,no,no,1.0
+27,17122,23,turn,train,Is the object turning?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4013.mp4,no,no,yes,no,0.6666666666666666
+28,16478,23,turn,train,Is the object turning?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/3369.mp4,no,no,yes,no,0.6666666666666666
+29,13167,23,turn,train,Is the object turning?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/58.mp4,yes,no,no,no,0.6666666666666666
+30,92507,20,topple,train,Does the object topple?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/844.mp4,no,no,unsure,no,0.6666666666666666
+31,95080,20,topple,train,Does the object topple?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4045.mp4,yes,no,no,no,0.6666666666666666
+32,92189,20,topple,train,Does the object topple?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/445.mp4,no,no,no,no,1.0
+33,92275,20,topple,train,Does the object topple?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/554.mp4,no,no,no,no,1.0
+34,93681,20,topple,train,Does the object topple?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2304.mp4,no,no,unsure,no,0.6666666666666666
+35,91926,20,topple,train,Does the object topple?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/108.mp4,no,no,unsure,no,0.6666666666666666
+36,95452,20,topple,train,Does the object topple?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4505.mp4,yes,yes,yes,yes,1.0
+37,95983,20,topple,train,Does the object topple?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/5167.mp4,no,no,unsure,no,0.6666666666666666
+38,92814,20,topple,train,Does the object topple?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1215.mp4,no,no,unsure,no,0.6666666666666666
+39,94111,20,topple,train,Does the object topple?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2833.mp4,no,no,unsure,no,0.6666666666666666
+40,62741,14,slide,train,Does the object slide?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2099.mp4,yes,yes,no,yes,0.6666666666666666
+41,61377,14,slide,train,Does the object slide?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/390.mp4,yes,yes,unsure,yes,0.6666666666666666
+42,62581,14,slide,train,Does the object slide?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1888.mp4,yes,yes,yes,yes,1.0
+43,61576,14,slide,train,Does the object slide?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/645.mp4,no,no,no,no,1.0
+44,65216,14,slide,train,Does the object slide?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/5172.mp4,yes,yes,yes,yes,1.0
+45,63445,14,slide,train,Does the object slide?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2963.mp4,yes,yes,yes,yes,1.0
+46,63026,14,slide,train,Does the object slide?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2436.mp4,no,no,no,no,1.0
+47,64346,14,slide,train,Does the object slide?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4091.mp4,yes,no,no,no,0.6666666666666666
+48,61080,14,slide,train,Does the object slide?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/10.mp4,yes,yes,yes,yes,1.0
+49,62312,14,slide,train,Does the object slide?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1554.mp4,no,no,no,no,1.0
+50,81636,16,start,train,Does the object start moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4131.mp4,yes,yes,yes,yes,1.0
+51,82460,16,start,train,Does the object start moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4955.mp4,yes,no,yes,yes,0.6666666666666666
+52,79736,16,start,train,Does the object start moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2231.mp4,yes,yes,no,yes,0.6666666666666666
+53,79059,16,start,train,Does the object start moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1554.mp4,yes,no,yes,yes,0.6666666666666666
+54,82368,16,start,train,Does the object start moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4863.mp4,yes,yes,yes,yes,1.0
+55,78722,16,start,train,Does the object start moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1217.mp4,yes,yes,no,yes,0.6666666666666666
+56,79343,16,start,train,Does the object start moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1838.mp4,yes,no,no,no,0.6666666666666666
+57,79759,16,start,train,Does the object start moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2254.mp4,yes,no,yes,yes,0.6666666666666666
+58,81712,16,start,train,Does the object start moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4207.mp4,yes,yes,no,yes,0.6666666666666666
+59,78415,16,start,train,Does the object start moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/910.mp4,yes,no,yes,yes,0.6666666666666666
+60,25413,15,spin,train,Does the object spin?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/501.mp4,no,no,no,no,1.0
+61,25846,15,spin,train,Does the object spin?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/934.mp4,yes,no,yes,yes,0.6666666666666666
+62,30003,15,spin,train,Does the object spin?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/5091.mp4,yes,no,yes,yes,0.6666666666666666
+63,26535,15,spin,train,Does the object spin?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1623.mp4,yes,no,yes,yes,0.6666666666666666
+64,26260,15,spin,train,Does the object spin?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1348.mp4,yes,no,no,no,0.6666666666666666
+65,28186,15,spin,train,Does the object spin?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/3274.mp4,unsure,no,unsure,unsure,0.6666666666666666
+66,29212,15,spin,train,Does the object spin?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4300.mp4,yes,no,unsure,no,0.3333333333333333
+67,26081,15,spin,train,Does the object spin?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1169.mp4,yes,no,yes,yes,0.6666666666666666
+68,29589,15,spin,train,Does the object spin?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4677.mp4,no,no,yes,no,0.6666666666666666
+69,27863,15,spin,train,Does the object spin?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2951.mp4,no,no,no,no,1.0
+70,91556,18,throw,train,Does the object get thrown?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/3552.mp4,no,no,no,no,1.0
+71,91427,18,throw,train,Does the object get thrown?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2268.mp4,no,no,no,no,1.0
+72,91330,18,throw,train,Does the object get thrown?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1298.mp4,yes,yes,no,yes,0.6666666666666666
+73,91593,18,throw,train,Does the object get thrown?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/3878.mp4,no,no,no,no,1.0
+74,91667,18,throw,train,Does the object get thrown?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4608.mp4,no,no,no,no,1.0
+75,91428,18,throw,train,Does the object get thrown?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2281.mp4,yes,yes,no,yes,0.6666666666666666
+76,91302,18,throw,train,Does the object get thrown?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/976.mp4,no,no,no,no,1.0
+77,91665,18,throw,train,Does the object get thrown?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4587.mp4,yes,yes,no,yes,0.6666666666666666
+78,91527,18,throw,train,Does the object get thrown?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/3277.mp4,no,no,no,no,1.0
+79,91605,18,throw,train,Does the object get thrown?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/3961.mp4,no,no,no,no,1.0
+80,99725,19,tip,train,Does the object tip?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/3255.mp4,no,no,no,no,1.0
+81,99437,19,tip,train,Does the object tip?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2907.mp4,yes,yes,no,yes,0.6666666666666666
+82,100598,19,tip,train,Does the object tip?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4355.mp4,no,yes,no,no,0.6666666666666666
+83,101262,19,tip,train,Does the object tip?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/5181.mp4,no,no,no,no,1.0
+84,97420,19,tip,train,Does the object tip?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/394.mp4,yes,yes,no,yes,0.6666666666666666
+85,100837,19,tip,train,Does the object tip?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4660.mp4,no,no,unsure,no,0.6666666666666666
+86,100895,19,tip,train,Does the object tip?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4729.mp4,no,no,unsure,no,0.6666666666666666
+87,101122,19,tip,train,Does the object tip?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/5008.mp4,no,no,unsure,no,0.6666666666666666
+88,97777,19,tip,train,Does the object tip?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/846.mp4,no,no,unsure,no,0.6666666666666666
+89,100223,19,tip,train,Does the object tip?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/3891.mp4,no,yes,no,no,0.6666666666666666
+90,87527,17,stop,train,Does the object stop moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/3487.mp4,no,no,no,no,1.0
+91,85353,17,stop,train,Does the object stop moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1313.mp4,no,no,no,no,1.0
+92,85856,17,stop,train,Does the object stop moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1816.mp4,no,no,no,no,1.0
+93,86554,17,stop,train,Does the object stop moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2514.mp4,no,no,no,no,1.0
+94,88083,17,stop,train,Does the object stop moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4043.mp4,no,no,no,no,1.0
+95,88061,17,stop,train,Does the object stop moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4021.mp4,yes,yes,yes,yes,1.0
+96,88617,17,stop,train,Does the object stop moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4577.mp4,no,no,no,no,1.0
+97,84110,17,stop,train,Does the object stop moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/70.mp4,no,no,no,no,1.0
+98,86176,17,stop,train,Does the object stop moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2136.mp4,no,no,no,no,1.0
+99,86359,17,stop,train,Does the object stop moving?,https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2319.mp4,no,yes,no,no,0.6666666666666666

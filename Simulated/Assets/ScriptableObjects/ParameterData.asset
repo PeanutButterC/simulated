@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 128d06569cc8a4648b43039e2c0ab0b1, type: 3}
+  m_Name: ParameterData
+  m_EditorClassIdentifier: 
+  reachSpeed: 2
+  retractSpeed: 2
+  throwSpeed: 5
+  hitSpeed: 10
+  pickSpeedMin: 1
+  pickSpeedMax: 3
+  pickSpeed: 1.2692022
+  putSpeedMin: 1
+  putSpeedMax: 3
+  putSpeed: 2.5835302
+  pushSpeedMin: 1
+  pushSpeedMax: 3
+  pushSpeed: 2.6232388
+  throwForceMin: 25
+  throwForceMax: 125
+  throwForce: 58.88223
+  hitForceMin: 25
+  hitForceMax: 125
+  hitForce: 35.755
+  massMin: 0.1
+  massMax: 10
+  mass: 3.4125109
+  dragMin: 0
+  dragMax: 2
+  drag: 1.759011
+  angularDragMin: 0.1
+  angularDragMax: 1
+  angularDrag: 0.28763896
+  dynamicFrictionMin: 0
+  dynamicFrictionMax: 1
+  dynamicFriction: 0
+  staticFrictionDeltaMin: -0.5
+  staticFrictionDeltaMax: 0.5
+  staticFriction: 0
+  bouncinessMin: 0
+  bouncinessMax: 1
+  bounciness: 0
+  activeMesh: 2

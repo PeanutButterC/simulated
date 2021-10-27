@@ -1,0 +1,336 @@
+<QuestionForm xmlns='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd'>
+    <Overview>
+        <Title>Does the specified action occur in the 1s video clip?</Title>
+        <Text>Choose whether the specified action occurs in the 1 second video clip.</Text>
+    </Overview>
+    <Question>
+        <QuestionIdentifier>q1</QuestionIdentifier>
+        <DisplayName>1 of 10</DisplayName>
+        <IsRequired>true</IsRequired>
+        <QuestionContent>
+            <EmbeddedBinary>
+                <EmbeddedMimeType>
+                    <Type>video</Type>
+                    <SubType>mp4</SubType>
+                </EmbeddedMimeType>
+                <DataURL>https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2559.mp4</DataURL>
+                <AltText>1s video clip of a hand interacting with an object</AltText>
+                <Width>256</Width>
+                <Height>256</Height>
+            </EmbeddedBinary>
+            <Text>Does the object get pushed?</Text>
+        </QuestionContent>
+        <AnswerSpecification>
+            <SelectionAnswer>
+                <StyleSuggestion>radiobutton</StyleSuggestion>
+                <Selections>
+                    <Selection>
+                        <SelectionIdentifier>yes</SelectionIdentifier>
+                        <Text>Yes</Text>
+                    </Selection>
+                    <Selection>
+                        <SelectionIdentifier>no</SelectionIdentifier>
+                        <Text>No</Text>
+                    </Selection>
+                </Selections>
+            </SelectionAnswer>
+        </AnswerSpecification>
+    </Question>
+    <Question>
+        <QuestionIdentifier>q2</QuestionIdentifier>
+        <DisplayName>2 of 10</DisplayName>
+        <IsRequired>true</IsRequired>
+        <QuestionContent>
+            <EmbeddedBinary>
+                <EmbeddedMimeType>
+                    <Type>video</Type>
+                    <SubType>mp4</SubType>
+                </EmbeddedMimeType>
+                <DataURL>https://plunarlabcit.services.brown.edu/crowdsourcing/videos/738.mp4</DataURL>
+                <AltText>1s video clip of a hand interacting with an object</AltText>
+                <Width>256</Width>
+                <Height>256</Height>
+            </EmbeddedBinary>
+            <Text>Does the object get thrown?</Text>
+        </QuestionContent>
+        <AnswerSpecification>
+            <SelectionAnswer>
+                <StyleSuggestion>radiobutton</StyleSuggestion>
+                <Selections>
+                    <Selection>
+                        <SelectionIdentifier>yes</SelectionIdentifier>
+                        <Text>Yes</Text>
+                    </Selection>
+                    <Selection>
+                        <SelectionIdentifier>no</SelectionIdentifier>
+                        <Text>No</Text>
+                    </Selection>
+                </Selections>
+            </SelectionAnswer>
+        </AnswerSpecification>
+    </Question>
+    <Question>
+        <QuestionIdentifier>q3</QuestionIdentifier>
+        <DisplayName>3 of 10</DisplayName>
+        <IsRequired>true</IsRequired>
+        <QuestionContent>
+            <EmbeddedBinary>
+                <EmbeddedMimeType>
+                    <Type>video</Type>
+                    <SubType>mp4</SubType>
+                </EmbeddedMimeType>
+                <DataURL>https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1573.mp4</DataURL>
+                <AltText>1s video clip of a hand interacting with an object</AltText>
+                <Width>256</Width>
+                <Height>256</Height>
+            </EmbeddedBinary>
+            <Text>Does the object fall?</Text>
+        </QuestionContent>
+        <AnswerSpecification>
+            <SelectionAnswer>
+                <StyleSuggestion>radiobutton</StyleSuggestion>
+                <Selections>
+                    <Selection>
+                        <SelectionIdentifier>yes</SelectionIdentifier>
+                        <Text>Yes</Text>
+                    </Selection>
+                    <Selection>
+                        <SelectionIdentifier>no</SelectionIdentifier>
+                        <Text>No</Text>
+                    </Selection>
+                </Selections>
+            </SelectionAnswer>
+        </AnswerSpecification>
+    </Question>
+    <Question>
+        <QuestionIdentifier>q4</QuestionIdentifier>
+        <DisplayName>4 of 10</DisplayName>
+        <IsRequired>true</IsRequired>
+        <QuestionContent>
+            <EmbeddedBinary>
+                <EmbeddedMimeType>
+                    <Type>video</Type>
+                    <SubType>mp4</SubType>
+                </EmbeddedMimeType>
+                <DataURL>https://plunarlabcit.services.brown.edu/crowdsourcing/videos/3749.mp4</DataURL>
+                <AltText>1s video clip of a hand interacting with an object</AltText>
+                <Width>256</Width>
+                <Height>256</Height>
+            </EmbeddedBinary>
+            <Text>Does the object bounce?</Text>
+        </QuestionContent>
+        <AnswerSpecification>
+            <SelectionAnswer>
+                <StyleSuggestion>radiobutton</StyleSuggestion>
+                <Selections>
+                    <Selection>
+                        <SelectionIdentifier>yes</SelectionIdentifier>
+                        <Text>Yes</Text>
+                    </Selection>
+                    <Selection>
+                        <SelectionIdentifier>no</SelectionIdentifier>
+                        <Text>No</Text>
+                    </Selection>
+                </Selections>
+            </SelectionAnswer>
+        </AnswerSpecification>
+    </Question>
+    <Question>
+        <QuestionIdentifier>q5</QuestionIdentifier>
+        <DisplayName>5 of 10</DisplayName>
+        <IsRequired>true</IsRequired>
+        <QuestionContent>
+            <EmbeddedBinary>
+                <EmbeddedMimeType>
+                    <Type>video</Type>
+                    <SubType>mp4</SubType>
+                </EmbeddedMimeType>
+                <DataURL>https://plunarlabcit.services.brown.edu/crowdsourcing/videos/4233.mp4</DataURL>
+                <AltText>1s video clip of a hand interacting with an object</AltText>
+                <Width>256</Width>
+                <Height>256</Height>
+            </EmbeddedBinary>
+            <Text>Does the object get carried?</Text>
+        </QuestionContent>
+        <AnswerSpecification>
+            <SelectionAnswer>
+                <StyleSuggestion>radiobutton</StyleSuggestion>
+                <Selections>
+                    <Selection>
+                        <SelectionIdentifier>yes</SelectionIdentifier>
+                        <Text>Yes</Text>
+                    </Selection>
+                    <Selection>
+                        <SelectionIdentifier>no</SelectionIdentifier>
+                        <Text>No</Text>
+                    </Selection>
+                </Selections>
+            </SelectionAnswer>
+        </AnswerSpecification>
+    </Question>
+    <Question>
+        <QuestionIdentifier>q6</QuestionIdentifier>
+        <DisplayName>6 of 10</DisplayName>
+        <IsRequired>true</IsRequired>
+        <QuestionContent>
+            <EmbeddedBinary>
+                <EmbeddedMimeType>
+                    <Type>video</Type>
+                    <SubType>mp4</SubType>
+                </EmbeddedMimeType>
+                <DataURL>https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2319.mp4</DataURL>
+                <AltText>1s video clip of a hand interacting with an object</AltText>
+                <Width>256</Width>
+                <Height>256</Height>
+            </EmbeddedBinary>
+            <Text>Does the object get dropped?</Text>
+        </QuestionContent>
+        <AnswerSpecification>
+            <SelectionAnswer>
+                <StyleSuggestion>radiobutton</StyleSuggestion>
+                <Selections>
+                    <Selection>
+                        <SelectionIdentifier>yes</SelectionIdentifier>
+                        <Text>Yes</Text>
+                    </Selection>
+                    <Selection>
+                        <SelectionIdentifier>no</SelectionIdentifier>
+                        <Text>No</Text>
+                    </Selection>
+                </Selections>
+            </SelectionAnswer>
+        </AnswerSpecification>
+    </Question>
+    <Question>
+        <QuestionIdentifier>q7</QuestionIdentifier>
+        <DisplayName>7 of 10</DisplayName>
+        <IsRequired>true</IsRequired>
+        <QuestionContent>
+            <EmbeddedBinary>
+                <EmbeddedMimeType>
+                    <Type>video</Type>
+                    <SubType>mp4</SubType>
+                </EmbeddedMimeType>
+                <DataURL>https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2240.mp4</DataURL>
+                <AltText>1s video clip of a hand interacting with an object</AltText>
+                <Width>256</Width>
+                <Height>256</Height>
+            </EmbeddedBinary>
+            <Text>Does the object get pushed?</Text>
+        </QuestionContent>
+        <AnswerSpecification>
+            <SelectionAnswer>
+                <StyleSuggestion>radiobutton</StyleSuggestion>
+                <Selections>
+                    <Selection>
+                        <SelectionIdentifier>yes</SelectionIdentifier>
+                        <Text>Yes</Text>
+                    </Selection>
+                    <Selection>
+                        <SelectionIdentifier>no</SelectionIdentifier>
+                        <Text>No</Text>
+                    </Selection>
+                </Selections>
+            </SelectionAnswer>
+        </AnswerSpecification>
+    </Question>
+    <Question>
+        <QuestionIdentifier>q8</QuestionIdentifier>
+        <DisplayName>8 of 10</DisplayName>
+        <IsRequired>true</IsRequired>
+        <QuestionContent>
+            <EmbeddedBinary>
+                <EmbeddedMimeType>
+                    <Type>video</Type>
+                    <SubType>mp4</SubType>
+                </EmbeddedMimeType>
+                <DataURL>https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1921.mp4</DataURL>
+                <AltText>1s video clip of a hand interacting with an object</AltText>
+                <Width>256</Width>
+                <Height>256</Height>
+            </EmbeddedBinary>
+            <Text>Does the object fall off something?</Text>
+        </QuestionContent>
+        <AnswerSpecification>
+            <SelectionAnswer>
+                <StyleSuggestion>radiobutton</StyleSuggestion>
+                <Selections>
+                    <Selection>
+                        <SelectionIdentifier>yes</SelectionIdentifier>
+                        <Text>Yes</Text>
+                    </Selection>
+                    <Selection>
+                        <SelectionIdentifier>no</SelectionIdentifier>
+                        <Text>No</Text>
+                    </Selection>
+                </Selections>
+            </SelectionAnswer>
+        </AnswerSpecification>
+    </Question>
+    <Question>
+        <QuestionIdentifier>q9</QuestionIdentifier>
+        <DisplayName>9 of 10</DisplayName>
+        <IsRequired>true</IsRequired>
+        <QuestionContent>
+            <EmbeddedBinary>
+                <EmbeddedMimeType>
+                    <Type>video</Type>
+                    <SubType>mp4</SubType>
+                </EmbeddedMimeType>
+                <DataURL>https://plunarlabcit.services.brown.edu/crowdsourcing/videos/1345.mp4</DataURL>
+                <AltText>1s video clip of a hand interacting with an object</AltText>
+                <Width>256</Width>
+                <Height>256</Height>
+            </EmbeddedBinary>
+            <Text>Does the object get picked up?</Text>
+        </QuestionContent>
+        <AnswerSpecification>
+            <SelectionAnswer>
+                <StyleSuggestion>radiobutton</StyleSuggestion>
+                <Selections>
+                    <Selection>
+                        <SelectionIdentifier>yes</SelectionIdentifier>
+                        <Text>Yes</Text>
+                    </Selection>
+                    <Selection>
+                        <SelectionIdentifier>no</SelectionIdentifier>
+                        <Text>No</Text>
+                    </Selection>
+                </Selections>
+            </SelectionAnswer>
+        </AnswerSpecification>
+    </Question>
+    <Question>
+        <QuestionIdentifier>q10</QuestionIdentifier>
+        <DisplayName>10 of 10</DisplayName>
+        <IsRequired>true</IsRequired>
+        <QuestionContent>
+            <EmbeddedBinary>
+                <EmbeddedMimeType>
+                    <Type>video</Type>
+                    <SubType>mp4</SubType>
+                </EmbeddedMimeType>
+                <DataURL>https://plunarlabcit.services.brown.edu/crowdsourcing/videos/2240.mp4</DataURL>
+                <AltText>1s video clip of a hand interacting with an object</AltText>
+                <Width>256</Width>
+                <Height>256</Height>
+            </EmbeddedBinary>
+            <Text>Does the object get carried?</Text>
+        </QuestionContent>
+        <AnswerSpecification>
+            <SelectionAnswer>
+                <StyleSuggestion>radiobutton</StyleSuggestion>
+                <Selections>
+                    <Selection>
+                        <SelectionIdentifier>yes</SelectionIdentifier>
+                        <Text>Yes</Text>
+                    </Selection>
+                    <Selection>
+                        <SelectionIdentifier>no</SelectionIdentifier>
+                        <Text>No</Text>
+                    </Selection>
+                </Selections>
+            </SelectionAnswer>
+        </AnswerSpecification>
+    </Question>
+</QuestionForm>

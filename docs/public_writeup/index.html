@@ -1,0 +1,250 @@
+<html>
+    <head>
+        <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    </head>
+    <style>
+        th span {
+            text-decoration: underline;
+        }
+
+        .tab-pane {
+            padding: 1em 1em 0 1em;
+        }
+    </style>
+    <body>
+        <div class="container">
+            <h1 class="py-2 mt-5 border-bottom font-weight-bold">Simulated Spatial Dataset</h1>
+            <a class="text-muted" href="https://dylanebert.com">Dylan Ebert</a>
+            <div class="mt-5 pb-5 border-bottom">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <h3>What?</h3>
+                        <p class="lead">A procedurally-generated dataset of a virtual agent interacting with an object, annotated with crowdsourced action labels.</p>
+                        <h6 class="border-bottom py-2">Objectives</h6>
+                        <ul>
+                            <li><b>Spatial - </b>Enable training machine learning models on 3D spatial data.</li>
+                            <li><b>Scalable - </b>Over 10,000 hours of motion data.</li>
+                            <li><b>Emergent - </b>A variety of observable actions emerge from a simple set of rules.</li>
+                            <li><b>Tractable - </b>Narrow environment constraints aid progress on a challenging problem.</li>
+                        </ul>
+                        <h6 class="border-bottom py-2">Limitations</h6>
+                        <ul>
+                            <li><b>Simulated - </b>The data is not natural, and may not generalize to real-world spatial data.</li>
+                            <li><b>Limited - </b>Annotations are only gathered for a small subset of the data.</li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-4">
+                        <video src="https://plunarlabcit.services.brown.edu/simulated/videos/637599834313986900-a312cbb0-1ae5-4267-810a-859d1e269767.mp4" autoplay loop muted controls></video>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-5">
+                <h3>How?</h3>
+                <h6 class="border-bottom mt-4 py-2">Environment</h6>
+                <p>Data is generated in the <a href="https://unity.com">Unity</a> game engine, and follows Unity conventions, such as a Y-up coordinate system.
+                It consists of an agent interacting with a single target object. Each frame, <b>target position</b>, <b>target rotation</b>, and <b>hand position</b> are recorded.</p>
+                <p>Below is a visualization of these features, corresponding to a 1-second clip. <i>Not from our dataset.</i></p>
+                <div class="row my-4">
+                    <div class="col-sm-6">
+                        <figure class="figure">
+                            <video autoplay muted loop style="max-width: 100%;">
+                                <source type="video/mp4" src="video.mp4">
+                            </video> 
+                            <figcaption class="figure-caption">Example clip, to demonstrate the spatial data being collected.</figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-sm-6">
+                        <canvas id="chart"></canvas>
+                    </div>
+                </div>
+                <p>In our project, data generation is broken up into <b><i>sessions</i></b> and <b><i>actions</i></b>.</p>
+                <h6 class="mt-4 py-2 border-bottom">Sessions</h6>
+                <p>Each <b><i>session</i></b> is a continuous 3-minute block with a set of <i>session-level parameters</i>, as described below.</p>
+                <p class="mt-4"><b>Session-level parameters</b></p>
+                <ul>
+                    <li><b>Start Position - </b>The initial position of the agent, selected randomly among waypoints around the room.</li>
+                    <li><b>Start Rotation - </b>The initial rotation of the agent about the y-axis. Random from 0 to 360.</li>
+                    <li><b>Target Mesh - </b>The shape of the target object. Random between the <a href="https://docs.unity3d.com/ScriptReference/GameObject.CreatePrimitive.html">Unity primitive types</a>: sphere, cube, cylinder, and capsule.</li>
+                    <li><b>Target Position - </b>The initial position of the target object on the counter. Uniform from -0.65 to 0.65 on the XZ plane. Or, move intuitively, in a random spot on the counter, not too close to the edge.</li>
+                    <li><b>Target Rotation - </b>The initial rotation of the target about the y-axis. Random from 0 to 360.</li>
+                    <li><b>Target Mass - </b>The <a href="https://docs.unity3d.com/ScriptReference/Rigidbody-mass.html">mass</a> of the target. Uniform from 0.1 to 10.</li>
+                    <li><b>Target Drag - </b>The <a href="https://docs.unity3d.com/ScriptReference/Rigidbody-drag.html">drag</a> of the target. Uniform from 0 to 2.</li>
+                    <li><b>Target Angular Drag - </b>The <a href="https://docs.unity3d.com/ScriptReference/Rigidbody-angularDrag.html">angular drag</a> of the target. Uniform from 0.1 to 1.</li>
+                    <li><b>Dynamic Friction - </b>The <a href="https://docs.unity3d.com/Manual/class-PhysicMaterial.html">dynamic friction</a> of all surfaces in the room. Uniform from 0 to 1.</li>
+                    <li><b>Static Friction - </b>The <a href="https://docs.unity3d.com/Manual/class-PhysicMaterial.html">static friction</a> of all surfaces in the room. Uniform from 0 to 1. <i>Constrained to have a maximum magnitude difference from dynamic friction of 0.3.</i></li>
+                    <li><b>Bounciness - </b>The <a href="https://docs.unity3d.com/Manual/class-PhysicMaterial.html">bounciness</a> of all surfaces in the room. Uniform from 0 to 1.</li>
+                </ul>
+                <h6 class="mt-4 py-2 border-bottom">Actions</h6>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p>Within each session, behavior is driven by a <a href="https://en.wikipedia.org/wiki/Markov_chain">Markov Chain</a> with a set of randomly parameterized <b><i>actions</i></b>.</p>
+                        <p>The states in the markov chain are the state of the object, which can either be considered <i>Held</i>, <i>OnGround</i>, or <i>OnCounter</i>. The actions are described below.</p>
+                        <p class="mt-4"><b>Actions and action-level parameters</b></p>
+                        <ul>
+                            <li>
+                                <b>Pick - </b>Pick up an object from the ground or counter, resulting in it being held.
+                                <ul>
+                                    <li><b>Pick Speed - </b>Speed of pick motion. Random uniform.</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <b>Put - </b>Put a held object on the counter.
+                                <ul>
+                                    <li><b>Put Speed - </b>Speed of the put motion. Random uniform.</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <b>Throw - </b>Throw a held object, almost always resulting in it being on the ground, but possibly on the counter.
+                                <ul>
+                                    <li><b>Throw Speed - </b>Speed of the hand motion prior to releasing the object. Random uniform.</li>
+                                    <li><b>Throw Force - </b>Force magnitude applied to the object when released. Random uniform.</li>
+                                    <li><b>Throw Direction - </b>Direction of the force applied to the object when released. Random uniform, constrained to the hemisphere in front of the agent, biased upward.</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <b>Drop - </b>Release a held object, resulting in it being on the ground.
+                            </li>
+                            <li>
+                                <b>Hit - </b>Hit an object that's on the counter, applying a strong impulse force on contact, resulting in it being on the ground or on the counter.
+                                <ul>
+                                    <li><b>Hit Speed - </b>Speed of the hit motion prior to contact with the object. Random uniform.</li>
+                                    <li><b>Hit Force - </b>Force magnitude applied to the object on contact. Random uniform.</li>
+                                    <li><b>Prepare Hit Location - </b>A location to move the hand to to prepare for the hit motion. Random uniform, constrained to a plausible location near the target.</li>
+                                    <li><b>Hit Direction - </b>Direction of the force applied to the object on contact. Random uniform, constrained to the local XZ plane between the hand and object.</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <b>Push - </b>Push an object across the counter, applying a continuous force equivalent to the hand motion, resulting in it being on the ground or on the counter.
+                                <ul>
+                                    <li><b>Push Speed - </b>Speed of the push motion. Random uniform.</li>
+                                    <li><b>Prepare Push Position - </b>A location to move the hand to to prepare for the push motion. Random uniform, constrained to a plausible location near the target.</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <b>Carry - </b>Move with a held object from one location to another.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="mt-3 text-center">
+                            <figure class="figure">
+                                <video src="https://plunarlabcit.services.brown.edu/public/simulated_dataset_demo.mp4" style="max-width: 100%" controls muted></video>
+                                <figcaption class="figure-caption">Hi-res session reconstruction, demonstrating the actions described.</figcaption>
+                            </figure>                    
+                        </div>
+                        <div class="text-center">
+                            <figure class="figure">
+                                <img src="MDP.png" class="img-fluid p-3" style="max-height: 512px">
+                                <figcaption class="figure-caption">Markov chain partially describing data collection paradigm.</figcaption>
+                            </figure>
+                        </div>                        
+                    </div>                    
+                </div>
+            </div>
+            <div class="mt-5">
+                <h3>Data distribution</h3>
+                <p>Show meta-statistics of the actions, taken from https://dylanebert.com/spatial_blog/</p>
+            </div>
+            <div class="mt-5">
+                <h3>Annotation</h3>
+                <p>Annotations are gathered through crowdsourcing on <a href="https://www.mturk.com/">Amazon Mechanical Turk</a>.
+                    We ask simple yes/no questions:</p>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <p>Possible queries:</p>
+                        <ol>
+                            <li><b>hit - </b>does the object get hit?</li>
+                            <li><b>slap - </b>does the object get slapped?</li>
+                            <li><b>carry - </b>does the object get carried?</li>
+                            <li><b>turn - </b>is the object turning?</li>
+                            <li><b>roll - </b>does the object roll?</li>
+                            <li><b>spin - </b>does the object spin?</li>
+                            <li><b>bounce - </b>does the object bounce?</li>
+                            <li><b>fall - </b>does the object fall?</li>
+                            <li><b>drop - </b>does the object get dropped?</li>
+                            <li><b>fall off - </b>does the object fall off something?</li>
+                            <li><b>fall over - </b>does the object fall over?</li>
+                            <li><b>bump - </b>does the object get bumped?</li>
+                            <li><b>slide - </b>does the object slide?</li>
+                            <li><b>pick - </b>does the object get picked up?</li>
+                            <li><b>put - </b>does the object get put down?</li>
+                            <li><b>push - </b>does the object get pushed?</li>
+                            <li><b>flip - </b>is the object flipping?</li>
+                            <li><b>start - </b>does the object start moving?</li>
+                            <li><b>stop - </b>does the object stop moving?</li>
+                            <li><b>toss - </b>does the object get tossed?</li>
+                            <li><b>throw - </b>does the object get thrown?</li>
+                            <li><b>topple - </b>does the object topple?</li>
+                            <li><b>tip - </b>does the object tip?</li>
+                            <li><b>tumble - </b>does the object tumble?</li>
+                        </ol>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="text-center">
+                            <figure class="figure">
+                                <img src="crowdsourcing_hit.png" class="img-fluid">
+                                <figcaption class="figure-caption">Example of what the crowdworker sees.</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+                <p>We present <b>1000 clips</b> per query, and collect <b>5 responses per clip</b>, for a total <b>120,000 responses</b>.
+                    These were batched into 10-response HITs, divided among <b>131 workers</b>. The average worker provided <b>820</b> responses, ranging
+                    from 10 to 12,310 responses, for a median <b>39</b> responses.</p>
+                <h6 class="border-bottom mt-4 py-2">Agreement</h6>
+                <p><i>Agreement</i> is measured as the proportion of responses that match the majority response for a given query. Lack of agreement can be explained by multiple factors:</p>
+                <ol>
+                    <li><a href="http://up.csail.mit.edu/other-pubs/soylent.pdf">Lazy turkers</a>, or an expected small subset of workers that provide low-quality responses.</li>
+                    <li><b>Obstruction</b>, where, in some cases, the worker can't see what happens because the object is behind the counter.</li>
+                    <li><b>Ambiguity</b>, where workers fundamentally disagree on whether an action applies to a clip. <b><i>This is the most interesting source of disagreement for us</i></b>,
+                        as it clearly highlights the challenges of learning actions, which are less clearly defined than objects.<!--add source--></li>
+                </ol>
+                <p>The chart below shows the average worker agreement by action.</p>
+                <div class="text-center">
+                    <figure class="figure">
+                        <img class="img-fluid" src="agreement.png">
+                        <figcaption class="figure-caption">Average worker agreement, or proportion responses matching the majority response, by action.</figcaption>
+                    </figure>
+                </div>
+                <p>The minimum possible agreement is 0.5 (or 0.33 including the "unsure" response), and the maximum possible agreement is 1. 
+                    There are some noticable trends here:</p>
+                <ol>
+                    <li>Agreement is <b>highest</b> among actions that involve <b>gravity</b>, like <i>fall</i>, <i>bounce</i>, and <i>drop</i>.</li>
+                    <li>Agreement is in the <b>middle</b> among actions that involve <b>interaction</b>, like <i>pick up</i>, <i>put down</i>, and <i>push</i>.</li>
+                    <li>Agreement is <b>lowest</b> among actions that involve <b>rotation</b>, like <i>turn</i>, <i>spin</i>, and <i>flip</i>.</li>
+                </ol>
+                <p>It may be worth investigating the significance of this trend. An intuitive explanation is that gravity is a universal constant that </p>
+                <h6 class="border-bottom mt-4 py-2">Overlap</h6>
+                <p>The same clip is often presented for several queries. We are interested in how often a clip labeled by a majority as <i>X</i>
+                    is also labeled as <i>Y</i>. Below is a heatmap of how often positive responses for queries on the same clip overlap.</p>
+                <div class="text-center">
+                    <figure class="figure">
+                        <img class="img-fluid" src="heatmap.png">
+                        <figcaption class="figure-caption">Heatmap showing how often different query responses are positive (i.e. "yes, the object _____") for the same clip.</figcaption>
+                    </figure>
+                </div>
+                <p>From this heatmap, we can see certain actions that frequently cooccur. For example, <b>hit</b>, <b>push</b>, and <b>bump</b>
+                    are almost always labeled as each other.</p>
+            </div>
+        </div>
+        <footer class="py-5 mt-5 border-top"></footer>
+    </body>
+    <script>
+        $.get('https://raw.githubusercontent.com/dylanebert/spatial_blog/master/data.json', function(res) {
+            var data = $.parseJSON(res);
+            var ctx = $('#chart');
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: data
+            })
+        })
+    </script>
+</html>
