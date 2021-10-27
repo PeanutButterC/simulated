@@ -2,50 +2,39 @@ import numpy as np
 import pandas as pd
 from paths import SIMULATED_DATA_ROOT
 from tqdm import tqdm
-import argparse
 from simulated_data import DATA_COLS, SESSION_SIZE
 import h5py
 
 
-def gather(sequence_length, sequence_stride):
-    fname = f'sequences_sequence-length={sequence_length}_sequence-stride={sequence_stride}'
-    output_stores = {f: f'{SIMULATED_DATA_ROOT}/{fname}_{f}.h5' for f in ['train', 'dev', 'test']}
+def gather():
+    output_stores = {f: f'{SIMULATED_DATA_ROOT}/sequences_{f}.h5' for f in ['train', 'dev', 'test']}
     print('loading stores')
     stores = {type: pd.HDFStore(f'{SIMULATED_DATA_ROOT}/{type}.h5', 'r') for type in ['train', 'dev', 'test']}
 
     for type in ['train', 'dev', 'test']:
         with h5py.File(output_stores[type], 'w') as f:
             nsessions = stores[type].get_storer('df').nrows // SESSION_SIZE
-            chunksize = (SESSION_SIZE - sequence_length) // sequence_stride + 1
-            n_sequences = nsessions * chunksize
-            output_dset = f.create_dataset('df', (n_sequences, sequence_length, len(DATA_COLS)), dtype=np.float32, chunks=(chunksize, sequence_length, len(DATA_COLS)))
-            output_hand_states = f.create_dataset('hand_states', (n_sequences, sequence_length), dtype=np.int64, chunks=(chunksize, sequence_length))
+            if nsessions >= SESSION_SIZE:
+                dset_chunks = (SESSION_SIZE, len(DATA_COLS))
+                hand_state_chunks = (SESSION_SIZE,)
+            else:
+                dset_chunks = True
+                hand_state_chunks = True
+            output_dset = f.create_dataset('df', (nsessions, SESSION_SIZE, len(DATA_COLS)), dtype=np.float32, chunks=dset_chunks)
+            output_hand_states = f.create_dataset('hand_states', (nsessions, SESSION_SIZE), dtype=np.int64, chunks=hand_state_chunks)
             idx = 0
             indices = []
             for df in tqdm(stores[type].select('df', chunksize=SESSION_SIZE), total=nsessions):
                 assert df.index.values[0][0] == df.index.values[-1][0]
                 data = df[DATA_COLS].to_numpy()
                 hand_states = df['hand_state'].to_numpy(dtype=np.int64)
-                for i in range(0, SESSION_SIZE - sequence_length + 1, sequence_stride):
-                    sequence = data[i:i+sequence_length]
-                    hand_state_seq = hand_states[i:i+sequence_length]
-                    output_dset[idx] = sequence
-                    output_hand_states[idx] = hand_state_seq
-                    indices.append(f'{df.index.values[i][0]},{df.index.values[i][1]}')
-                    idx += 1
-            print(idx, n_sequences)
+                output_dset[idx] = data
+                output_hand_states[idx] = hand_states
+                indices.append(df.index.values[0][0])
+                idx += 1
+            print(idx, nsessions)
             f.create_dataset('indices', data=np.array(indices, dtype='S'))
 
 
 if __name__ == '__main__':
-    # 90 + chunk_size = sequence_length
-    # sequence_length // stride = chunks per sequence
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--chunk_size', type=int, default=30, help='size of input chunks for the contrastive model')
-    parser.add_argument('--chunk_stride', type=int, default=30, help='stride of input chunks for the contrastive model, equal to chunk_size is non-overlapping')
-    parser.add_argument('--sequence_stride', type=int, default=90, help='stride for whole sequences from the dataset')
-    args = parser.parse_args()
-    if not (90 + args.chunk_size) % args.chunk_stride == 0:
-        raise ValueError('Invalid stride')
-    sequence_length = 90 + args.chunk_size
-    gather(sequence_length, args.sequence_stride)
+    gather()
