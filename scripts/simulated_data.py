@@ -360,6 +360,11 @@ class NaiveCrowdsourcingDataGenerator():
                 batch[idx] = data
                 for i, action in enumerate(ACTIONS):
                     labels[idx][i] = clip[action]
+                if idx == 0:
+                    print(clip)
+                    print(clip['url'])
+                    for i, action in enumerate(ACTIONS):
+                        print(action, labels[idx][i])
                 idx += 1
                 if idx == self.cfg.model.batch_size:
                     idx = 0
@@ -531,10 +536,9 @@ def visualize(gen):
 if __name__ == '__main__':
     cfg = OmegaConf.load('conf/config.yaml')
     cfg.model = OmegaConf.load('conf/model/cpc.yaml')
-    # cfg.model.batch_size = 10
+    cfg.model.batch_size = 10
     print(cfg)
-    gen = CPCDataGenerator(cfg)
-    for x in gen.dev:
-        print(x['o_i'].shape, x['o_j'].shape)
+    gen = NaiveCrowdsourcingDataGenerator(cfg)
+    for x, y in gen.train:
+        print(x.shape, y.shape)
         break
-    # visualize(gen)

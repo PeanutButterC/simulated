@@ -170,12 +170,12 @@ def compute_budget_ceiling(cost_per_assignment, assignments_per_hit, max_hits_pe
 
 
 if __name__ == '__main__':
-    cost_per_assignment = .01
-    assignments_per_hit = 1
-    max_hits_per_action = 10
+    cost_per_assignment = .1
+    assignments_per_hit = 5
+    max_hits_per_action = 100
     budget = 1200
     sandbox = True
     name = 'sandbox'
     compute_budget_ceiling(cost_per_assignment, assignments_per_hit, max_hits_per_action=max_hits_per_action)
-    make_batch(name, max_hits_per_action=max_hits_per_action)
-    submit_batch(name, budget, cost_per_assignment, assignments_per_hit, sandbox=sandbox)
+    # make_batch(name, max_hits_per_action=max_hits_per_action)
+    # submit_batch(name, budget, cost_per_assignment, assignments_per_hit, sandbox=sandbox)
