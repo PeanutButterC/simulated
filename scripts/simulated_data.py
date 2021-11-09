@@ -156,7 +156,7 @@ class NaiveProbeDataGenerator():
             (None, cfg.model.input_width, 10)
         )
         self.output_types = (tf.float32, tf.int64)
-        self.stores = {f: f'{SIMULATED_DATA_ROOT}/sequences_{f}.h5' for f in ['train', 'dev', 'test']}
+        self.stores = {f: f'{SIMULATED_PATH}/mini/sequences_{f}.h5' for f in ['train', 'dev', 'test']}
 
     def generate_train(self):
         return self.generate('train')
@@ -222,7 +222,7 @@ class CPCProbeDataGenerator():
             (None, self.cfg.model.input_width * cfg.model.chunk_size)
         )
         self.output_types = (tf.float32, tf.int64)
-        self.stores = {f: f'{SIMULATED_DATA_ROOT}/sequences_{f}.h5' for f in ['train', 'dev', 'test']}
+        self.stores = {f: f'{SIMULATED_PATH}/mini/sequences_{f}.h5' for f in ['train', 'dev', 'test']}
 
     def generate_train(self):
         return self.generate('train')
