@@ -15,8 +15,8 @@ class NaiveCrowdsourcingProbe(tf.keras.Model):
         self.cfg = cfg
         self.model = model
         self.rnn = tf.keras.layers.RNN(self.model.lstm_cell, return_sequences=True)
-        self.flatten = tf.keras.layers.Flatten()
         self.decoder = tf.keras.models.Sequential([
+            tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(cfg.model.hidden_width, activation='relu'),
             tf.keras.layers.Dense(len(ACTIONS), activation='sigmoid')
         ])
@@ -26,7 +26,6 @@ class NaiveCrowdsourcingProbe(tf.keras.Model):
     def call(self, x):
         x = self.model.dense(x)
         x = self.rnn(x)
-        x = self.flatten(x)
         return self.decoder(x)
 
 
@@ -36,6 +35,7 @@ class CPCCrowdsourcingProbe(tf.keras.Model):
         self.cfg = cfg
         self.model = model
         self.decoder = tf.keras.models.Sequential([
+            tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(cfg.model.proj_width, activation='relu'),
             tf.keras.layers.Dense(len(ACTIONS), activation='sigmoid')
         ])
@@ -53,6 +53,7 @@ class CPCCrowdsourcingEncoderProbe(tf.keras.Model):
         self.cfg = cfg
         self.model = model
         self.decoder = tf.keras.models.Sequential([
+            tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(cfg.model.proj_width, activation='relu'),
             tf.keras.layers.Dense(len(ACTIONS), activation='sigmoid')
         ])
@@ -76,9 +77,9 @@ def main(cfg, args, encoder):
         gen = CPCDataGenerator(cfg)
         model = CPCModel(cfg)
         if encoder:
-            probe = CPCCrowdsourcingProbe(cfg, model)
-        else:
             probe = CPCCrowdsourcingEncoderProbe(cfg, model)
+        else:
+            probe = CPCCrowdsourcingProbe(cfg, model)
         model(next(iter(gen.train)))
         model.load_weights(f'{SIMULATED_PATH}/outputs/{args.dir}/weights.h5')
     else:
