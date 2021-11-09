@@ -123,7 +123,7 @@ def main(cfg, args, linear):
             acc_macro = np.mean(accuracies)
             prec_macro = np.mean(precisions)
             print(f'Train loss: {train_loss} Dev loss: {dev_loss} Accuracy (macro): {acc_macro} Precision (macro): {prec_macro}', flush=True)
-            if prec_macro < best_prec:
+            if prec_macro > best_prec:
                 k = 0
                 best_prec = prec_macro
                 print(f'Improved, save to {probe_path}', flush=True)

@@ -127,7 +127,7 @@ def main(cfg, args, encoder=False):
             print(f'Train loss: {train_loss} Dev loss: {dev_loss} Precision: {precision} f1 micro: {f1_micro} f1 macro: {f1_macro}', flush=True)
             if precision > best_prec:
                 k = 0
-                best_prec = prec
+                best_prec = precision
                 print('Improved')
                 probe.save_weights(probe_path)
             else:
