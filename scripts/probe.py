@@ -124,7 +124,7 @@ def main(cfg, args, encoder=False):
             precision = precision_avg.result()
             f1_micro = f1_micro_avg.result()
             f1_macro = f1_macro_avg.result()
-            print(f'Train loss: {train_loss} Dev loss: {dev_loss} Precision: {precision} f1 micro: {f1_micro} f1 macro: {f1_macro}')
+            print(f'Train loss: {train_loss} Dev loss: {dev_loss} Precision: {precision} f1 micro: {f1_micro} f1 macro: {f1_macro}', flush=True)
             if dev_loss < best_loss:
                 k = 0
                 best_loss = dev_loss

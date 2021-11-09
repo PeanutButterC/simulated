@@ -122,11 +122,11 @@ def main(cfg, args, linear):
             precisions = [float(prec.result()) for prec in precision_avg]
             acc_macro = np.mean(accuracies)
             prec_macro = np.mean(precisions)
-            print(f'Train loss: {train_loss} Dev loss: {dev_loss} Accuracy (macro): {acc_macro} Precision (macro): {prec_macro}')
+            print(f'Train loss: {train_loss} Dev loss: {dev_loss} Accuracy (macro): {acc_macro} Precision (macro): {prec_macro}', flush=True)
             if dev_loss < best_loss:
                 k = 0
                 best_loss = dev_loss
-                print(f'Improved, save to {probe_path}')
+                print(f'Improved, save to {probe_path}', flush=True)
                 probe.save_weights(probe_path)
             else:
                 k += 1
