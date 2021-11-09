@@ -16,9 +16,6 @@ ACTIONS = ['hit', 'slap', 'carry', 'turn', 'roll', 'spin', 'bounce', 'fall', 'dr
 class NaiveDataGenerator():
     def __init__(self, cfg):
         self.cfg = cfg
-        self.data_cols = ['target_posX', 'target_posY', 'target_posZ',
-                          'target_rotX', 'target_rotY', 'target_rotZ', 'target_rotW',
-                          'hand_posX', 'hand_posY', 'hand_posZ']
         self.output_shapes = (
             (None, cfg.model.input_width, 10),
             (None, cfg.model.output_width, 10)
@@ -154,24 +151,12 @@ class CPCDataGenerator():
 class NaiveProbeDataGenerator():
     def __init__(self, cfg):
         self.cfg = cfg
-        self.data_cols = ['target_posX', 'target_posY', 'target_posZ',
-                          'target_rotX', 'target_rotY', 'target_rotZ', 'target_rotW',
-                          'hand_posX', 'hand_posY', 'hand_posZ', 'hand_state']
         self.output_shapes = (
             (None, cfg.model.input_width, 10),
-            (None, cfg.model.input_width)
+            (None, cfg.model.input_width, 10)
         )
         self.output_types = (tf.float32, tf.int64)
-        self.stores = {
-            'train': pd.HDFStore(f'{SIMULATED_DATA_ROOT}/train.h5'),
-            'dev': pd.HDFStore(f'{SIMULATED_DATA_ROOT}/dev.h5'),
-            'test': pd.HDFStore(f'{SIMULATED_DATA_ROOT}/test.h5')
-        }
-        self.sessions = {
-            'train': self.stores['train'].select_column('df', 'id').unique().tolist(),
-            'dev': self.stores['dev'].select_column('df', 'id').unique().tolist(),
-            'test': self.stores['test'].select_column('df', 'id').unique().tolist()
-        }
+        self.stores = {f: f'{SIMULATED_DATA_ROOT}/sequences_{f}.h5' for f in ['train', 'dev', 'test']}
 
     def generate_train(self):
         return self.generate('train')
@@ -195,16 +180,15 @@ class NaiveProbeDataGenerator():
         return tf.data.Dataset.from_generator(self.generate_test, output_types=self.output_types, output_shapes=self.output_shapes)
 
     def generate(self, type):
-        store = self.stores[type]
-        sessions = self.sessions[type]
-        random.shuffle(sessions)
-        for session in sessions:
-            df = store.select('df', 'id=%r' % session)
-            assert df.index.values[0][0] == df.index.values[-1][0]
-            data = df[self.data_cols].to_numpy(dtype=np.float32)
-            ds = self.make_window_dataset(data)
-            for x, y in ds:
-                yield x, y
+        with h5py.File(self.stores[type], 'r') as f:
+            dset = f['df']
+            indices = list(range(len(dset)))
+            random.shuffle(indices)
+            for idx in indices:
+                data = dset[idx, :, :]
+                ds = self.make_window_dataset(data)
+                for x, y in ds:
+                    yield x, y
 
     def make_window_dataset(self, data):
         ds = tf.keras.preprocessing.timeseries_dataset_from_array(
@@ -221,9 +205,10 @@ class NaiveProbeDataGenerator():
         return ds
 
     def split_window(self, window):
-        states = window[:, :, -1]
+        states = tf.cast(window[:, :, -1], tf.int64)
         window = window[:, :, :-1]
-        states.set_shape([None, self.cfg.model.input_width])
+        states = tf.one_hot(states, 10)
+        states.set_shape([None, self.cfg.model.input_width, 10])
         window.set_shape([None, self.cfg.model.input_width, 10])
         return window, states
 
@@ -231,18 +216,13 @@ class NaiveProbeDataGenerator():
 class CPCProbeDataGenerator():
     def __init__(self, cfg):
         self.cfg = cfg
-        self.data_cols = ['target_posX', 'target_posY', 'target_posZ',
-                          'target_rotX', 'target_rotY', 'target_rotZ', 'target_rotW',
-                          'hand_posX', 'hand_posY', 'hand_posZ', 'hand_state']
         self.sequence_length = 90
-        self.input_width = self.sequence_length // cfg.model.chunk_stride
         self.output_shapes = (
-            (None, self.input_width, cfg.model.chunk_size, 10),
-            (None, self.input_width)
+            (None, self.cfg.model.input_width, cfg.model.chunk_size, 10),
+            (None, self.cfg.model.input_width * cfg.model.chunk_size)
         )
         self.output_types = (tf.float32, tf.int64)
-        fname = f'sequences_sequence-length=120_sequence-stride={cfg.model.sequence_stride}'
-        self.sequence_stores = {f: f'{SIMULATED_DATA_ROOT}/{fname}_{f}.h5' for f in ['train', 'dev', 'test']}
+        self.stores = {f: f'{SIMULATED_DATA_ROOT}/sequences_{f}.h5' for f in ['train', 'dev', 'test']}
 
     def generate_train(self):
         return self.generate('train')
@@ -266,40 +246,43 @@ class CPCProbeDataGenerator():
         return tf.data.Dataset.from_generator(self.generate_test, output_types=self.output_types, output_shapes=self.output_shapes)
 
     def generate(self, type):
-        with h5py.File(self.sequence_stores[type], 'r') as f:
-            sequences = f['df']
-            hand_states = f['hand_states']
-            batch_size = self.cfg.model.batch_size
-            indices = list(range(len(sequences)))
+        with h5py.File(self.stores[type], 'r') as f:
+            dset = f['df']
+            sequences_per_session = (SESSION_SIZE - self.sequence_length) // self.cfg.model.chunk_stride + 1
+            indices = list(range(len(dset) * sequences_per_session))
             random.shuffle(indices)
-            indices = np.array(indices)
-            for batch_idx in range(0, len(sequences) - batch_size + 1, batch_size):
-                batch_indices = indices[batch_idx:batch_idx+batch_size]
-                x_batch = sequences[sorted(batch_indices)][:, :-1]
-                y_batch = hand_states[sorted(batch_indices)][:, :-1]
-                x_batch, y_batch = self.split_chunks(x_batch, y_batch)
-                yield x_batch, y_batch
+            x_batch = []
+            y_batch = []
+            for idx in indices:
+                session_idx = idx // sequences_per_session
+                sequence_idx = (idx % sequences_per_session) * self.cfg.model.chunk_stride
+                data = dset[session_idx, sequence_idx:(sequence_idx+self.sequence_length), :-1]
+                labels = dset[session_idx, sequence_idx:(sequence_idx+self.sequence_length), -1]
+                x_batch.append(data)
+                y_batch.append(labels)
+                if len(x_batch) == self.cfg.model.batch_size:
+                    x_batch = np.array(x_batch)
+                    y_batch = np.array(y_batch)
+                    x_batch, y_batch = self.split_chunks(x_batch, y_batch)
+                    yield x_batch, y_batch
+                    x_batch = []
+                    y_batch = []
 
     def split_chunks(self, x_batch, y_batch):
         x_chunks = []
-        y_labels = []
+        y_chunks = []
         for i in range(0, x_batch.shape[1] - self.cfg.model.chunk_size + 1, self.cfg.model.chunk_stride):
-            x_window = x_batch[:, i:i+self.cfg.model.chunk_size]
-            x_chunks.append(x_window)
-            y_window = y_batch[:, i:i+self.cfg.model.chunk_size]
-            label_row = []
-            for row in y_window:
-                label = np.argmax(np.bincount(row))
-                label_row.append(label)
-            label_row = np.array(label_row)
-            y_labels.append(label_row)
-        x = np.stack(x_chunks, axis=1)
-        y = np.stack(y_labels, axis=1)
-        x = tf.convert_to_tensor(x, dtype=tf.float32)
-        y = tf.convert_to_tensor(y, dtype=tf.int64)
-        x.set_shape([None, self.input_width, self.cfg.model.chunk_size, 10])
-        y.set_shape([None, self.input_width])
-        return x, y
+            window = x_batch[:, i:i+self.cfg.model.chunk_size]
+            labels = y_batch[:, i:i+self.cfg.model.chunk_size]
+            x_chunks.append(window)
+            y_chunks.append(labels)
+        x_batch = np.stack(x_chunks, axis=1)
+        y_batch = np.concatenate(y_chunks, axis=1)
+        x_batch = tf.convert_to_tensor(x_batch, dtype=tf.float32)
+        y_batch = tf.convert_to_tensor(y_batch, dtype=tf.int64)
+        x_batch.set_shape([None, self.cfg.model.input_width, self.cfg.model.chunk_size, 10])
+        y_batch.set_shape([None, self.cfg.model.input_width * self.cfg.model.chunk_size])
+        return x_batch, y_batch
 
 
 class NaiveCrowdsourcingDataGenerator():
@@ -535,10 +518,11 @@ def visualize(gen):
 
 if __name__ == '__main__':
     cfg = OmegaConf.load('conf/config.yaml')
-    cfg.model = OmegaConf.load('conf/model/cpc.yaml')
-    cfg.model.batch_size = 10
+    cfg.model = OmegaConf.load('conf/model/naive.yaml')
+    cfg.model.batch_size = 64
     print(cfg)
-    gen = NaiveCrowdsourcingDataGenerator(cfg)
+    gen = NaiveProbeDataGenerator(cfg)
     for x, y in gen.train:
         print(x.shape, y.shape)
+        print(y[10])
         break

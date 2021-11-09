@@ -1,4 +1,5 @@
 import tensorflow as tf
+import tensorflow_addons as tfa
 import numpy as np
 from paths import SIMULATED_PATH
 from simulated_data import NaiveDataGenerator, NaiveProbeDataGenerator, CPCDataGenerator, CPCProbeDataGenerator
@@ -66,7 +67,7 @@ class CPCEncoderProbe(tf.keras.Model):
         return self.decoder(x)
 
 
-def main(cfg, title, encoder=False):
+def main(cfg, args, encoder=False):
     if cfg.model.name == 'naive':
         probe_gen = NaiveProbeDataGenerator(cfg)
         gen = NaiveDataGenerator(cfg)
@@ -93,7 +94,46 @@ def main(cfg, title, encoder=False):
         probe(next(iter(probe_gen.train))[0])
         probe.load_weights(probe_path)
     else:
-        probe.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+        loss_fn = tf.keras.losses.CategoricalCrossentropy()
+        optimizer = tf.keras.optimizers.Adam()
+        best_loss = float('inf')
+        k = 0
+        patience = 5
+        for epoch in range(999):
+            train_loss_avg = tf.keras.metrics.Mean()
+            dev_loss_avg = tf.keras.metrics.Mean()
+            precision_avg = tf.keras.metrics.Precision()
+            f1_micro_avg = tfa.metrics.F1Score(num_classes=10, average='micro')
+            f1_macro_avg = tfa.metrics.F1Score(num_classes=10, average='macro')
+            for x_batch_train, y_batch_train in tqdm(probe_gen.train):
+                with tf.GradientTape() as tape:
+                    y_batch_pred = probe(x_batch_train)
+                    loss = loss_fn(y_batch_train, y_batch_pred)
+                grads = tape.gradient(loss, probe.trainable_weights)
+                optimizer.apply_gradients(zip(grads, probe.trainable_weights))
+                train_loss_avg.update_state(loss)
+            for x_batch_dev, y_batch_dev in probe_gen.dev:
+                y_batch_pred = probe(x_batch_dev)
+                loss = loss_fn(y_batch_dev, y_batch_pred)
+                dev_loss_avg.update_state(loss)
+                precision_avg.update_state(y_batch_dev, y_batch_pred)
+                f1_micro_avg.update_state(y_batch_dev, y_batch_pred)
+                f1_macro_avg.update_state(tf.reshape(y_batch_dev, (-1, 10)), tf.reshape(y_batch_pred, (-1, 10)))
+            train_loss = train_loss_avg.result()
+            dev_loss = dev_loss_avg.result()
+            precision = precision_avg.result()
+            f1_micro = f1_micro_avg.result()
+            f1_macro = f1_macro_avg.result()
+            print(f'Train loss: {train_loss} Dev loss: {dev_loss} Precision: {precision} f1 micro: {f1_micro} f1 macro: {f1_macro}')
+            if dev_loss < best_loss:
+                k = 0
+                best_loss = dev_loss
+                print('Improved')
+                probe.save_weights(probe_path)
+            else:
+                k += 1
+                if k >= patience:
+                    break
         early_stopping = tf.keras.callbacks.EarlyStopping(min_delta=1e-3, patience=cfg.patience, verbose=1)
         checkpoint = tf.keras.callbacks.ModelCheckpoint(probe_path, save_best_only=True, verbose=1)
         callbacks = [early_stopping, checkpoint]
@@ -122,7 +162,7 @@ def main(cfg, title, encoder=False):
     ax = sns.heatmap(cm, xticklabels=cm_labels, yticklabels=cm_labels)
     ax.set(xlabel='predicted label', ylabel='true label')
     plt.xticks(rotation=45)
-    plt.title(title)
+    plt.title(args.dir)
     plt.show()
 
 
@@ -133,5 +173,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     path = f'{SIMULATED_PATH}/outputs/{args.dir}/.hydra/config.yaml'
     cfg = OmegaConf.load(path)
+    cfg.model.batch_size = 64
     print(cfg)
-    main(cfg, args.dir, args.encoder)
+    main(cfg, args, args.encoder)
