@@ -88,9 +88,9 @@ def main(cfg, args, linear):
     else:
         optimizer = tf.keras.optimizers.Adam()
         loss_fn = tf.keras.losses.BinaryCrossentropy()
-        best_loss = float('inf')
+        best_prec = 0
         k = 0
-        patience = 5
+        patience = 25
         for epoch in range(999):
             train_loss_avg = tf.keras.metrics.Mean()
             dev_loss_avg = tf.keras.metrics.Mean()
@@ -123,9 +123,9 @@ def main(cfg, args, linear):
             acc_macro = np.mean(accuracies)
             prec_macro = np.mean(precisions)
             print(f'Train loss: {train_loss} Dev loss: {dev_loss} Accuracy (macro): {acc_macro} Precision (macro): {prec_macro}', flush=True)
-            if dev_loss < best_loss:
+            if prec_macro < best_prec:
                 k = 0
-                best_loss = dev_loss
+                best_prec = prec_macro
                 print(f'Improved, save to {probe_path}', flush=True)
                 probe.save_weights(probe_path)
             else:

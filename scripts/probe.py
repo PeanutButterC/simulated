@@ -96,9 +96,9 @@ def main(cfg, args, encoder=False):
     else:
         loss_fn = tf.keras.losses.CategoricalCrossentropy()
         optimizer = tf.keras.optimizers.Adam()
-        best_loss = float('inf')
+        best_prec = 0
         k = 0
-        patience = 5
+        patience = 10
         for epoch in range(999):
             train_loss_avg = tf.keras.metrics.Mean()
             dev_loss_avg = tf.keras.metrics.Mean()
@@ -125,9 +125,9 @@ def main(cfg, args, encoder=False):
             f1_micro = f1_micro_avg.result()
             f1_macro = f1_macro_avg.result()
             print(f'Train loss: {train_loss} Dev loss: {dev_loss} Precision: {precision} f1 micro: {f1_micro} f1 macro: {f1_macro}', flush=True)
-            if dev_loss < best_loss:
+            if precision > best_prec:
                 k = 0
-                best_loss = dev_loss
+                best_prec = prec
                 print('Improved')
                 probe.save_weights(probe_path)
             else:
