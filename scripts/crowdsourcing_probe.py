@@ -47,39 +47,44 @@ class CPCCrowdsourcingProbe(tf.keras.Model):
         return self.decoder(x)
 
 
-def main(cfg, args, linear):
+class CPCCrowdsourcingEncoderProbe(tf.keras.Model):
+    def __init__(self, cfg, model):
+        super().__init__()
+        self.cfg = cfg
+        self.model = model
+        self.decoder = tf.keras.models.Sequential([
+            tf.keras.layers.Dense(cfg.model.proj_width, activation='relu'),
+            tf.keras.layers.Dense(len(ACTIONS), activation='sigmoid')
+        ])
+        self.model.trainable = False
+
+    def call(self, x):
+        x = self.model.encoder_layer(x)
+        return self.decoder(x)
+
+
+def main(cfg, args, encoder):
     if cfg.model.name == 'naive':
         probe_gen = NaiveCrowdsourcingDataGenerator(cfg)
-        if args.linear:
-            probe = tf.keras.models.Sequential([
-                tf.keras.layers.Flatten(),
-                tf.keras.layers.Dense(cfg.model.hidden_width, activation='relu'),
-                tf.keras.layers.Dense(len(ACTIONS), activation='sigmoid')
-            ])
-        else:
-            gen = NaiveDataGenerator(cfg)
-            model = NaiveModel(cfg)
-            probe = NaiveCrowdsourcingProbe(cfg, model)
-            model(next(iter(gen.train))[0])
-            model.load_weights(f'{SIMULATED_PATH}/outputs/{args.dir}/weights.h5')
+        gen = NaiveDataGenerator(cfg)
+        model = NaiveModel(cfg)
+        probe = NaiveCrowdsourcingProbe(cfg, model)
+        model(next(iter(gen.train))[0])
+        model.load_weights(f'{SIMULATED_PATH}/outputs/{args.dir}/weights.h5')
     elif cfg.model.name == 'cpc':
         probe_gen = CPCCrowdsourcingDataGenerator(cfg)
-        if args.linear:
-            probe = tf.keras.models.Sequential([
-                tf.keras.layers.Flatten(),
-                tf.keras.layers.Dense(cfg.model.proj_width, activation='relu'),
-                tf.keras.layers.Dense(len(ACTIONS), activation='sigmoid')
-            ])
-        else:
-            gen = CPCDataGenerator(cfg)
-            model = CPCModel(cfg)
+        gen = CPCDataGenerator(cfg)
+        model = CPCModel(cfg)
+        if encoder:
             probe = CPCCrowdsourcingProbe(cfg, model)
-            model(next(iter(gen.train)))
-            model.load_weights(f'{SIMULATED_PATH}/outputs/{args.dir}/weights.h5')
+        else:
+            probe = CPCCrowdsourcingEncoderProbe(cfg, model)
+        model(next(iter(gen.train)))
+        model.load_weights(f'{SIMULATED_PATH}/outputs/{args.dir}/weights.h5')
     else:
         raise f'{cfg.model.name} not implemented'
-    if linear:
-        probe_path = f'{SIMULATED_PATH}/outputs/{args.dir}/crowdsourcing_linear_probe_weights.h5'
+    if encoder:
+        probe_path = f'{SIMULATED_PATH}/outputs/{args.dir}/crowdsourcing_probe_encoder_weights.h5'
     else:
         probe_path = f'{SIMULATED_PATH}/outputs/{args.dir}/crowdsourcing_probe_weights.h5'
     if os.path.exists(probe_path):
@@ -137,10 +142,10 @@ def main(cfg, args, linear):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir', type=str, required=True)
-    parser.add_argument('--linear', action='store_true')
+    parser.add_argument('--encoder', action='store_true')
     args = parser.parse_args()
     path = f'{SIMULATED_PATH}/outputs/{args.dir}/.hydra/config.yaml'
     cfg = OmegaConf.load(path)
     cfg.model.batch_size = 64
     print(cfg)
-    main(cfg, args, args.linear)
+    main(cfg, args, args.encoder)
