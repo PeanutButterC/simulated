@@ -98,7 +98,7 @@ def main(cfg, args, encoder=False):
         optimizer = tf.keras.optimizers.Adam()
         best_prec = 0
         k = 0
-        patience = 10
+        patience = 5
         for epoch in range(999):
             train_loss_avg = tf.keras.metrics.Mean()
             dev_loss_avg = tf.keras.metrics.Mean()
