@@ -20,7 +20,7 @@ def build_crowdsourcing_response_dict():
                     'end_frame': meta_row['end_frame']
                 }
                 for action in actions:
-                    entry[action] = 0
+                    entry[action] = -1
                 df = df.append(entry, ignore_index=True)
                 entries = df[(df['session'] == meta_row['id']) & (df['start_frame'] == meta_row['start_frame']) & (df['end_frame'] == meta_row['end_frame'])]
             assert len(entries) == 1

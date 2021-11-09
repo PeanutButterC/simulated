@@ -1,3 +1,4 @@
+import numpy as np
 import tensorflow as tf
 from paths import SIMULATED_PATH
 from simulated_data import NaiveDataGenerator, CPCDataGenerator, NaiveCrowdsourcingDataGenerator, CPCCrowdsourcingDataGenerator, ACTIONS
@@ -5,6 +6,7 @@ from models import NaiveModel, CPCModel
 from omegaconf import OmegaConf
 import argparse
 import os
+from tqdm import tqdm
 
 
 class NaiveCrowdsourcingProbe(tf.keras.Model):
@@ -24,7 +26,8 @@ class NaiveCrowdsourcingProbe(tf.keras.Model):
     def call(self, x):
         x = self.model.dense(x)
         x = self.rnn(x)
-        return self.decoder(self.flatten(x))
+        x = self.flatten(x)
+        return self.decoder(x)
 
 
 class CPCCrowdsourcingProbe(tf.keras.Model):
@@ -44,7 +47,7 @@ class CPCCrowdsourcingProbe(tf.keras.Model):
         return self.decoder(x)
 
 
-def main(cfg, linear):
+def main(cfg, args, linear):
     if cfg.model.name == 'naive':
         probe_gen = NaiveCrowdsourcingDataGenerator(cfg)
         if args.linear:
@@ -83,11 +86,52 @@ def main(cfg, linear):
         probe(next(iter(probe_gen.train))[0])
         probe.load_weights(probe_path)
     else:
-        probe.compile(optimizer='adam', loss='binary_crossentropy', metrics=['binary_accuracy'])
-        early_stopping = tf.keras.callbacks.EarlyStopping(min_delta=1e-3, patience=cfg.patience, verbose=1)
-        checkpoint = tf.keras.callbacks.ModelCheckpoint(probe_path, save_best_only=True, verbose=1)
-        callbacks = [early_stopping, checkpoint]
-        probe.fit(probe_gen.train, validation_data=probe_gen.dev, callbacks=callbacks, epochs=999, verbose=1)
+        optimizer = tf.keras.optimizers.Adam()
+        loss_fn = tf.keras.losses.BinaryCrossentropy()
+        best_loss = float('inf')
+        k = 0
+        patience = 5
+        for epoch in range(999):
+            train_loss_avg = tf.keras.metrics.Mean()
+            dev_loss_avg = tf.keras.metrics.Mean()
+            accuracy_avg = [tf.keras.metrics.BinaryAccuracy() for action in ACTIONS]
+            precision_avg = [tf.keras.metrics.Precision() for action in ACTIONS]
+            for x_batch_train, y_batch_train in tqdm(probe_gen.train):
+                with tf.GradientTape() as tape:
+                    mask = tf.cast(tf.math.not_equal(y_batch_train, -1), tf.float32)
+                    y_batch_pred = probe(x_batch_train)
+                    y_batch_train = tf.cast(y_batch_train, tf.float32) * mask
+                    y_batch_pred *= mask
+                    loss = loss_fn(y_batch_train, y_batch_pred)
+                grads = tape.gradient(loss, probe.trainable_weights)
+                optimizer.apply_gradients(zip(grads, probe.trainable_weights))
+                train_loss_avg.update_state(loss)
+            for x_batch_dev, y_batch_dev in probe_gen.dev:
+                mask = tf.cast(tf.math.not_equal(y_batch_dev, -1), tf.float32)
+                y_batch_pred = probe(x_batch_dev)
+                y_batch_dev = tf.cast(y_batch_dev, tf.float32) * mask
+                y_batch_pred *= mask
+                loss = loss_fn(y_batch_dev, y_batch_pred)
+                dev_loss_avg.update_state(loss)
+                for i, action in enumerate(ACTIONS):
+                    accuracy_avg[i].update_state(y_batch_dev[:, i, tf.newaxis], y_batch_pred[:, i, tf.newaxis], sample_weight=mask[:, i])
+                    precision_avg[i].update_state(y_batch_dev[:, i, tf.newaxis], y_batch_pred[:, i, tf.newaxis], sample_weight=mask[:, i])
+            train_loss = train_loss_avg.result()
+            dev_loss = dev_loss_avg.result()
+            accuracies = [float(acc.result()) for acc in accuracy_avg]
+            precisions = [float(prec.result()) for prec in precision_avg]
+            acc_macro = np.mean(accuracies)
+            prec_macro = np.mean(precisions)
+            print(f'Train loss: {train_loss} Dev loss: {dev_loss} Accuracy (macro): {acc_macro} Precision (macro): {prec_macro}')
+            if dev_loss < best_loss:
+                k = 0
+                best_loss = dev_loss
+                print(f'Improved, save to {probe_path}')
+                probe.save_weights(probe_path)
+            else:
+                k += 1
+                if k >= patience:
+                    break
 
 
 if __name__ == '__main__':
@@ -97,6 +141,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     path = f'{SIMULATED_PATH}/outputs/{args.dir}/.hydra/config.yaml'
     cfg = OmegaConf.load(path)
-    cfg.model.batch_size = 10
+    cfg.model.batch_size = 64
     print(cfg)
-    main(cfg, args.linear)
+    main(cfg, args, args.linear)

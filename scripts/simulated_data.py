@@ -289,20 +289,11 @@ class NaiveCrowdsourcingDataGenerator():
     def __init__(self, cfg):
         self.cfg = cfg
         self.output_shapes = (
-            (None, 90, 10),
+            (None, cfg.model.input_width, 10),
             (None, len(ACTIONS))
         )
         self.output_types = (tf.float32, tf.int64)
-        self.stores = {
-            'train': pd.HDFStore(f'{SIMULATED_DATA_ROOT}/train.h5'),
-            'dev': pd.HDFStore(f'{SIMULATED_DATA_ROOT}/dev.h5'),
-            'test': pd.HDFStore(f'{SIMULATED_DATA_ROOT}/test.h5')
-        }
-        self.sessions = {
-            'train': self.stores['train'].select_column('df', 'id').unique().tolist(),
-            'dev': self.stores['dev'].select_column('df', 'id').unique().tolist(),
-            'test': self.stores['test'].select_column('df', 'id').unique().tolist()
-        }
+        self.stores = {f: f'{SIMULATED_PATH}/mini/sequences_{f}.h5' for f in ['train', 'dev', 'test']}
 
     def generate_train(self):
         return self.generate('train')
@@ -327,33 +318,31 @@ class NaiveCrowdsourcingDataGenerator():
 
     def generate(self, type):
         crowdsourcing_df = pd.read_json(f'{SIMULATED_PATH}/crowdsourcing/production_1/response_dict_{type}.json', orient='index')
-        store = self.stores[type]
-        sessions = self.sessions[type]
-        random.shuffle(sessions)
-        batch = np.zeros((self.cfg.model.batch_size, 90, 10))
-        labels = np.zeros((self.cfg.model.batch_size, len(ACTIONS)))
-        idx = 0
-        for session in sessions:
-            df = store.select('df', 'id=%r' % session)
-            assert df.index.values[0][0] == df.index.values[-1][0]
-            crowdsourcing_clips = crowdsourcing_df[crowdsourcing_df['session'] == df.index.values[0][0]]
-            for _, clip in crowdsourcing_clips.iterrows():
-                indices = [(df.index.values[0][0], frame) for frame in range(clip['start_frame'], clip['end_frame'])]
-                data = df.loc[indices][DATA_COLS].to_numpy(dtype=np.float32)
-                batch[idx] = data
-                for i, action in enumerate(ACTIONS):
-                    labels[idx][i] = clip[action]
-                if idx == 0:
-                    print(clip)
-                    print(clip['url'])
+        with h5py.File(self.stores[type], 'r') as f:
+            dset = f['df']
+            meta_indices = f['indices'][()]
+            meta_indices = np.array([s.decode('utf-8') for s in meta_indices])
+            indices = list(range(len(dset)))
+            random.shuffle(indices)
+            batch_x = []
+            batch_y = []
+            for idx in indices:
+                data = dset[idx, :, :-1]
+                session = meta_indices[idx]
+                clips = crowdsourcing_df[crowdsourcing_df['session'] == session]
+                for _, row in clips.iterrows():
+                    x = data[row['start_frame']:row['end_frame'], :]
+                    y = np.zeros((len(ACTIONS),))
                     for i, action in enumerate(ACTIONS):
-                        print(action, labels[idx][i])
-                idx += 1
-                if idx == self.cfg.model.batch_size:
-                    idx = 0
-                    yield batch, labels
-                    batch = np.zeros((self.cfg.model.batch_size, 90, 10))
-                    labels = np.zeros((self.cfg.model.batch_size, len(ACTIONS)))
+                        y[i] = row[action]
+                    batch_x.append(x)
+                    batch_y.append(y)
+                    if len(batch_x) == self.cfg.model.batch_size:
+                        batch_x = tf.stack(batch_x, axis=0)
+                        batch_y = tf.stack(batch_y, axis=0)
+                        yield batch_x, batch_y
+                        batch_x = []
+                        batch_y = []
 
 
 class CPCCrowdsourcingDataGenerator():
@@ -521,7 +510,7 @@ if __name__ == '__main__':
     cfg.model = OmegaConf.load('conf/model/naive.yaml')
     cfg.model.batch_size = 64
     print(cfg)
-    gen = NaiveProbeDataGenerator(cfg)
+    gen = NaiveCrowdsourcingDataGenerator(cfg)
     for x, y in gen.train:
         print(x.shape, y.shape)
         print(y[10])
