@@ -218,8 +218,8 @@ class CPCProbeDataGenerator():
         self.cfg = cfg
         self.sequence_length = 90
         self.output_shapes = (
-            (None, self.cfg.model.input_width, cfg.model.chunk_size, 10),
-            (None, self.cfg.model.input_width * cfg.model.chunk_size)
+            (None, cfg.model.input_width, cfg.model.chunk_size, 10),
+            (None, cfg.model.input_width * cfg.model.chunk_size, 10)
         )
         self.output_types = (tf.float32, tf.int64)
         self.stores = {f: f'{SIMULATED_PATH}/mini/sequences_{f}.h5' for f in ['train', 'dev', 'test']}
@@ -280,8 +280,9 @@ class CPCProbeDataGenerator():
         y_batch = np.concatenate(y_chunks, axis=1)
         x_batch = tf.convert_to_tensor(x_batch, dtype=tf.float32)
         y_batch = tf.convert_to_tensor(y_batch, dtype=tf.int64)
+        y_batch = tf.one_hot(y_batch, 10)
         x_batch.set_shape([None, self.cfg.model.input_width, self.cfg.model.chunk_size, 10])
-        y_batch.set_shape([None, self.cfg.model.input_width * self.cfg.model.chunk_size])
+        y_batch.set_shape([None, self.cfg.model.input_width * self.cfg.model.chunk_size, 10])
         return x_batch, y_batch
 
 
@@ -349,22 +350,12 @@ class CPCCrowdsourcingDataGenerator():
     def __init__(self, cfg):
         self.cfg = cfg
         self.sequence_length = 90
-        self.input_width = self.sequence_length // cfg.model.chunk_stride
         self.output_shapes = (
-            (None, self.input_width, cfg.model.chunk_size, 10),
+            (None, self.cfg.model.input_width, self.cfg.model.chunk_size, 10),
             (None, len(ACTIONS))
         )
         self.output_types = (tf.float32, tf.int64)
-        self.stores = {
-            'train': pd.HDFStore(f'{SIMULATED_DATA_ROOT}/train.h5'),
-            'dev': pd.HDFStore(f'{SIMULATED_DATA_ROOT}/dev.h5'),
-            'test': pd.HDFStore(f'{SIMULATED_DATA_ROOT}/test.h5')
-        }
-        self.sessions = {
-            'train': self.stores['train'].select_column('df', 'id').unique().tolist(),
-            'dev': self.stores['dev'].select_column('df', 'id').unique().tolist(),
-            'test': self.stores['test'].select_column('df', 'id').unique().tolist()
-        }
+        self.stores = {f: f'{SIMULATED_PATH}/mini/sequences_{f}.h5' for f in ['train', 'dev', 'test']}
 
     def generate_train(self):
         return self.generate('train')
@@ -389,39 +380,31 @@ class CPCCrowdsourcingDataGenerator():
 
     def generate(self, type):
         crowdsourcing_df = pd.read_json(f'{SIMULATED_PATH}/crowdsourcing/production_1/response_dict_{type}.json', orient='index')
-        store = self.stores[type]
-        sessions = self.sessions[type]
-        random.shuffle(sessions)
-        batch = np.zeros((self.cfg.model.batch_size, 90, 10))
-        labels = np.zeros((self.cfg.model.batch_size, len(ACTIONS)))
-        idx = 0
-        for session in sessions:
-            df = store.select('df', 'id=%r' % session)
-            assert df.index.values[0][0] == df.index.values[-1][0]
-            crowdsourcing_clips = crowdsourcing_df[crowdsourcing_df['session'] == df.index.values[0][0]]
-            for _, clip in crowdsourcing_clips.iterrows():
-                indices = [(df.index.values[0][0], frame) for frame in range(clip['start_frame'], clip['end_frame'])]
-                data = df.loc[indices][DATA_COLS].to_numpy(dtype=np.float32)
-                batch[idx] = data
-                for i, action in enumerate(ACTIONS):
-                    labels[idx][i] = clip[action]
-                idx += 1
-                if idx == self.cfg.model.batch_size:
-                    idx = 0
-                    batch = self.split_chunks(batch)
-                    yield batch, labels
-                    batch = np.zeros((self.cfg.model.batch_size, 90, 10))
-                    labels = np.zeros((self.cfg.model.batch_size, len(ACTIONS)))
-
-    def split_chunks(self, batch):
-        chunks = []
-        for i in range(0, batch.shape[1] - self.cfg.model.chunk_size + 1, self.cfg.model.chunk_stride):
-            window = batch[:, i:i+self.cfg.model.chunk_size]
-            chunks.append(window)
-        batch = np.stack(chunks, axis=1)
-        batch = tf.convert_to_tensor(batch, dtype=tf.float32)
-        batch.set_shape([None, self.input_width, self.cfg.model.chunk_size, 10])
-        return batch
+        with h5py.File(self.stores[type], 'r') as f:
+            dset = f['df']
+            meta_indices = f['indices'][()]
+            meta_indices = np.array([s.decode('utf-8') for s in meta_indices])
+            indices = list(range(len(dset)))
+            random.shuffle(indices)
+            batch_x = []
+            batch_y = []
+            for idx in indices:
+                data = dset[idx, :, :-1]
+                session = meta_indices[idx]
+                clips = crowdsourcing_df[crowdsourcing_df['session'] == session]
+                for _, row in clips.iterrows():
+                    x = data[row['start_frame']:row['end_frame'], :].reshape((self.cfg.model.input_width, self.cfg.model.chunk_size, 10))
+                    y = np.zeros((len(ACTIONS),))
+                    for i, action in enumerate(ACTIONS):
+                        y[i] = row[action]
+                    batch_x.append(x)
+                    batch_y.append(y)
+                    if len(batch_x) == self.cfg.model.batch_size:
+                        batch_x = tf.stack(batch_x, axis=0)
+                        batch_y = tf.stack(batch_y, axis=0)
+                        yield batch_x, batch_y
+                        batch_x = []
+                        batch_y = []
 
 
 class NaiveVisualizationDataGenerator():
@@ -507,10 +490,10 @@ def visualize(gen):
 
 if __name__ == '__main__':
     cfg = OmegaConf.load('conf/config.yaml')
-    cfg.model = OmegaConf.load('conf/model/naive.yaml')
+    cfg.model = OmegaConf.load('conf/model/cpc.yaml')
     cfg.model.batch_size = 64
     print(cfg)
-    gen = NaiveCrowdsourcingDataGenerator(cfg)
+    gen = CPCCrowdsourcingDataGenerator(cfg)
     for x, y in gen.train:
         print(x.shape, y.shape)
         print(y[10])

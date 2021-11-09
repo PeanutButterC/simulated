@@ -39,7 +39,9 @@ class CPCProbe(tf.keras.Model):
         self.model = model
         self.rnn = tf.keras.layers.RNN(self.model.lstm_cell, return_sequences=True)
         self.decoder = tf.keras.models.Sequential([
-            tf.keras.layers.Dense(cfg.model.proj_width, activation='relu'),
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(cfg.model.proj_width * 90, activation='relu'),
+            tf.keras.layers.Reshape((90, cfg.model.proj_width)),
             tf.keras.layers.Dense(10, activation='softmax')
         ])
         self.model.trainable = False
@@ -48,7 +50,8 @@ class CPCProbe(tf.keras.Model):
     def call(self, x):
         x = self.model.encoder_layer(x)
         x = self.rnn(x)
-        return self.decoder(x)
+        x = self.decoder(x)
+        return x
 
 
 class CPCEncoderProbe(tf.keras.Model):
@@ -57,7 +60,9 @@ class CPCEncoderProbe(tf.keras.Model):
         self.cfg = cfg
         self.model = model
         self.decoder = tf.keras.models.Sequential([
-            tf.keras.layers.Dense(cfg.model.proj_width, activation='relu'),
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(cfg.model.proj_width * 90, activation='relu'),
+            tf.keras.layers.Reshape((90, cfg.model.proj_width)),
             tf.keras.layers.Dense(10, activation='softmax')
         ])
         self.model.trainable = False
