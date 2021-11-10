@@ -344,6 +344,10 @@ class NaiveCrowdsourcingDataGenerator():
                         yield batch_x, batch_y
                         batch_x = []
                         batch_y = []
+            if len(batch_x) > 0:
+                batch_x = tf.stack(batch_x, axis=0)
+                batch_y = tf.stack(batch_y, axis=0)
+                yield batch_x, batch_y
 
 
 class CPCCrowdsourcingDataGenerator():
@@ -405,6 +409,10 @@ class CPCCrowdsourcingDataGenerator():
                         yield batch_x, batch_y
                         batch_x = []
                         batch_y = []
+            if len(batch_x) > 0:
+                batch_x = tf.stack(batch_x, axis=0)
+                batch_y = tf.stack(batch_y, axis=0)
+                yield batch_x, batch_y
 
 
 class NaiveVisualizationDataGenerator():
