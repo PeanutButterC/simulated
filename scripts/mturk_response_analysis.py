@@ -64,10 +64,11 @@ def response_heatmap(name):
     col_idx = heatmap.mean().sort_values(ascending=False).index
     heatmap = heatmap.reindex(index=row_idx, columns=col_idx)
     print(heatmap)
-    sns.set(rc={'figure.figsize': (16, 12)})
-    sns.heatmap(heatmap, cmap='Blues')
-    plt.xticks(rotation=45)
+    sns.set(rc={'figure.figsize': (8, 5.5)})
+    sns.heatmap(heatmap, cmap='vlag')
+    plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
+    plt.savefig('docs/heatmap.png', dpi=300)
     plt.show()
 
 
@@ -85,5 +86,5 @@ if __name__ == '__main__':
     name = 'production_1'
     # get_worker_statistics(name)
     # worker_analysis(name)
-    # response_heatmap(name)
-    agreement_bar(name)
+    response_heatmap(name)
+    # agreement_bar(name)

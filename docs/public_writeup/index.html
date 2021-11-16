@@ -149,102 +149,10 @@
                     </div>                    
                 </div>
             </div>
-            <div class="mt-5">
-                <h3>Data distribution</h3>
-                <p>Show meta-statistics of the actions, taken from https://dylanebert.com/spatial_blog/</p>
-            </div>
-            <div class="mt-5">
-                <h3>Annotation</h3>
-                <p>Annotations are gathered through crowdsourcing on <a href="https://www.mturk.com/">Amazon Mechanical Turk</a>.
-                    We ask simple yes/no questions:</p>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <p>Possible queries:</p>
-                        <ol>
-                            <li><b>hit - </b>does the object get hit?</li>
-                            <li><b>slap - </b>does the object get slapped?</li>
-                            <li><b>carry - </b>does the object get carried?</li>
-                            <li><b>turn - </b>is the object turning?</li>
-                            <li><b>roll - </b>does the object roll?</li>
-                            <li><b>spin - </b>does the object spin?</li>
-                            <li><b>bounce - </b>does the object bounce?</li>
-                            <li><b>fall - </b>does the object fall?</li>
-                            <li><b>drop - </b>does the object get dropped?</li>
-                            <li><b>fall off - </b>does the object fall off something?</li>
-                            <li><b>fall over - </b>does the object fall over?</li>
-                            <li><b>bump - </b>does the object get bumped?</li>
-                            <li><b>slide - </b>does the object slide?</li>
-                            <li><b>pick - </b>does the object get picked up?</li>
-                            <li><b>put - </b>does the object get put down?</li>
-                            <li><b>push - </b>does the object get pushed?</li>
-                            <li><b>flip - </b>is the object flipping?</li>
-                            <li><b>start - </b>does the object start moving?</li>
-                            <li><b>stop - </b>does the object stop moving?</li>
-                            <li><b>toss - </b>does the object get tossed?</li>
-                            <li><b>throw - </b>does the object get thrown?</li>
-                            <li><b>topple - </b>does the object topple?</li>
-                            <li><b>tip - </b>does the object tip?</li>
-                            <li><b>tumble - </b>does the object tumble?</li>
-                        </ol>
-                    </div>
-                    <div class="col-sm-8">
-                        <div class="text-center">
-                            <figure class="figure">
-                                <img src="crowdsourcing_hit.png" class="img-fluid">
-                                <figcaption class="figure-caption">Example of what the crowdworker sees.</figcaption>
-                            </figure>
-                        </div>
-                    </div>
-                </div>
-                <p>We present <b>1000 clips</b> per query, and collect <b>5 responses per clip</b>, for a total <b>120,000 responses</b>.
-                    These were batched into 10-response HITs, divided among <b>131 workers</b>. The average worker provided <b>820</b> responses, ranging
-                    from 10 to 12,310 responses, for a median <b>39</b> responses.</p>
-                <h6 class="border-bottom mt-4 py-2">Agreement</h6>
-                <p><i>Agreement</i> is measured as the proportion of responses that match the majority response for a given query. Lack of agreement can be explained by multiple factors:</p>
-                <ol>
-                    <li><a href="http://up.csail.mit.edu/other-pubs/soylent.pdf">Lazy turkers</a>, or an expected small subset of workers that provide low-quality responses.</li>
-                    <li><b>Obstruction</b>, where, in some cases, the worker can't see what happens because the object is behind the counter.</li>
-                    <li><b>Ambiguity</b>, where workers fundamentally disagree on whether an action applies to a clip. <b><i>This is the most interesting source of disagreement for us</i></b>,
-                        as it clearly highlights the challenges of learning actions, which are less clearly defined than objects.<!--add source--></li>
-                </ol>
-                <p>The chart below shows the average worker agreement by action.</p>
-                <div class="text-center">
-                    <figure class="figure">
-                        <img class="img-fluid" src="agreement.png">
-                        <figcaption class="figure-caption">Average worker agreement, or proportion responses matching the majority response, by action.</figcaption>
-                    </figure>
-                </div>
-                <p>The minimum possible agreement is 0.5 (or 0.33 including the "unsure" response), and the maximum possible agreement is 1. 
-                    There are some noticable trends here:</p>
-                <ol>
-                    <li>Agreement is <b>highest</b> among actions that involve <b>gravity</b>, like <i>fall</i>, <i>bounce</i>, and <i>drop</i>.</li>
-                    <li>Agreement is in the <b>middle</b> among actions that involve <b>interaction</b>, like <i>pick up</i>, <i>put down</i>, and <i>push</i>.</li>
-                    <li>Agreement is <b>lowest</b> among actions that involve <b>rotation</b>, like <i>turn</i>, <i>spin</i>, and <i>flip</i>.</li>
-                </ol>
-                <p>It may be worth investigating the significance of this trend. An intuitive explanation is that gravity is a universal constant that </p>
-                <h6 class="border-bottom mt-4 py-2">Overlap</h6>
-                <p>The same clip is often presented for several queries. We are interested in how often a clip labeled by a majority as <i>X</i>
-                    is also labeled as <i>Y</i>. Below is a heatmap of how often positive responses for queries on the same clip overlap.</p>
-                <div class="text-center">
-                    <figure class="figure">
-                        <img class="img-fluid" src="heatmap.png">
-                        <figcaption class="figure-caption">Heatmap showing how often different query responses are positive (i.e. "yes, the object _____") for the same clip.</figcaption>
-                    </figure>
-                </div>
-                <p>From this heatmap, we can see certain actions that frequently cooccur. For example, <b>hit</b>, <b>push</b>, and <b>bump</b>
-                    are almost always labeled as each other.</p>
-            </div>
         </div>
         <footer class="py-5 mt-5 border-top"></footer>
     </body>
     <script>
-        $.get('https://raw.githubusercontent.com/dylanebert/spatial_blog/master/data.json', function(res) {
-            var data = $.parseJSON(res);
-            var ctx = $('#chart');
-            var chart = new Chart(ctx, {
-                type: 'line',
-                data: data
-            })
-        })
+        
     </script>
 </html>
