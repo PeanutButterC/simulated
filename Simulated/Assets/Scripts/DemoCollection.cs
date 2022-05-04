@@ -66,7 +66,7 @@ public class DemoCollection : MonoBehaviour
             angular_drag = rigidBody.angularDrag
         };
         string json = JsonUtility.ToJson(sequence);
-        File.WriteAllText(Path.Combine(dir, "sequence.json"), json);
+        //File.WriteAllText(Path.Combine(dir, "sequence.json"), json);
     }
 
     [Serializable]
