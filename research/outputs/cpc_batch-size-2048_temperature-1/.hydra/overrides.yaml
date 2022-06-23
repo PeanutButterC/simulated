@@ -1,0 +1,3 @@
+- model=cpc
+- model.batch_size=2048
+- model.temperature=1

@@ -1,0 +1,11 @@
+model:
+  name: cpc
+  filters: 64
+  proj_width: 128
+  chunk_size: 30
+  chunk_stride: 30
+  input_width: 3
+  batch_size: 256
+  sampling_rate: 1
+  temperature: 0.5
+patience: 5

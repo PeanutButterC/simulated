@@ -1,0 +1,2 @@
+- model=naive
+- model.batch_size=64

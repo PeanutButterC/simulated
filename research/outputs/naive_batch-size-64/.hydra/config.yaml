@@ -1,0 +1,10 @@
+model:
+  name: naive
+  hidden_width: 128
+  discount_factor: 0.85
+  input_width: 90
+  output_width: 60
+  sampling_rate: 1
+  stride: 30
+  batch_size: 64
+patience: 5
